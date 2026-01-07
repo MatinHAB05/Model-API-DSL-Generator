@@ -6,9 +6,9 @@ enum Role{
 }
 
 model Person {
-    username : String @pk @non-nullable @unique @vaild[wildpattern="..."];
-    age : Int @nullable @vaild[min=8,max=14];
-    role : Role @non-nullable @vaild[exclude={"ADMIN"}];
-    second_role : Role @non-nullable @vaild[include={"MANAGER","USER"}];
-    bth : Date @vaild[min="2020-01-01" , max="2024-06-11"];
+    username : String @pk @non-nullable @unique @valid[wildpattern="..."];
+    age : Int @nullable @valid[min=8,max=14];
+    role : Role @non-nullable @valid[exclude={"ADMIN"}];
+    second_role : Role @non-nullable @valid[include={"MANAGER","USER"}];
+    bth : Date @valid[min="2020-01-01" , max="2024-06-11"];
 }
