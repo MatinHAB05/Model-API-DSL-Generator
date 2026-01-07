@@ -1,11 +1,11 @@
 grammar backendgrammer;
 
-compileinit : (modelrole | enumrole)* ;
+compileinit : (modelrole | enumrole | endpointrule)* ;
 
 
 // MODEL ROLES :
 
-modelrole : 'model' modelname '{' modelblock '}';
+modelrole : 'model' modelname '{' modelblock '}' ;
 
 modelname: variablename;
 
@@ -58,6 +58,36 @@ enumblock : enumitem | enumitem (',' enumitem)* ;
 enumitem : genericvalue ;
 
 
+// ENDPOINT RULES
+
+endpointrule : 'endpoint' operationId ':' htttpMethod endpointurl '{' endpoinblock '}';
+operationId : variablename ;
+htttpMethod : GET_KEY | POST_KEY | PUT_KEY | DELETE_KEY ;
+endpointurl : '/' | ('/' endpointurl_term)+ '/'?;
+endpointurl_term : '{' variablename'}' | variablename ('-' variablename)*   ;
+
+endpoinblock : responseblock ';' inputblock ';' | inputblock ';' | responseblock ';' | inputblock  responseblock ';' ;
+responseblock : 'response' ':' responseblock_inner ;
+responseblock_inner : modelname | 'relational' '{' relationalcode '}';
+relationalcode : ( define_variable_relational)* '->' expr_relational ';';
+define_variable_relational : variablename '=' expr_relational ';';
+expr_relational : term_relational | built_in_functions_relational ;
+term_relational : variablename | genericvalue;
+
+inputblock : 'input' ':' jsonstring ;
+jsonstring : stringvalue;
+
+built_in_functions_relational : SELECT_FUNCTION_KEY '<' ( key_value_pair_select_relational (',' key_value_pair_select_relational)* )? '>' '(' variablename ')'
+                              | PROJECT_FUNCTION_KEY '<' (variablename (',' variablename)*) '>' '(' variablename ')'
+                              | JOIN_FUNCTION_KEY '<' (variablename (',' variablename)*) '>' '(' variablename ',' variablename')'
+                              | LEN_FUNCTION_KEY '(' term_relational ')'
+                              | SET_FUNCTION_KEY '(' variablename ',' variablename ')'
+                              | ORDERBY_FUNCTION_KEY '(' variablename ',' booleanvalue ')'
+                              | LIMIT_FUNCTION_KEY '<'term_relational? ',' term_relational? ',' term_relational? '>' '(' variablename ')'
+                              ;
+
+key_value_pair_select_relational : variablename binary_logical_operation term_relational ;
+binary_logical_operation : 'eq' | 'lst' | 'grt' | 'noteq' ;
 
 // SHARED RULES
 
@@ -67,23 +97,68 @@ intvalue : ('+'|'-')? DIGIT+;
 stringvalue : STRINGVALUE;
 datevalue : DIGIT+ '-' DIGIT+ '-' DIGIT+;
 timevalue :  DIGIT+ ':' DIGIT+ ':' DIGIT+;
-
+booleanvalue : BOOLEANVALUE;
 variablename : VARIABLEID ;
 
+
+// KEYWORDS
+
+MODEL_KEY : 'model' ;
+ATSIGN_KEY : '@' ;
+FK_KEY : 'foreign-key';
+LEFT_CURLBR_KEY : '{' ;
+RIGHT_CURLBR_KEY : '}' ;
+COLON_KEY : ':';
+SEMICOLON_KEY : ';';
+LEFT_PAR_KEY : '(';
+RIGHT_PAR_KEY : ')';
+DOT_KEY : '.';
+VALID_KEY : 'valid';
+LEFT_BRACKET_KEY : '[';
+RIGHT_BRACKET_KEY : ']';
+COMMA_KEY : ',';
+EQUALSIGN_KEY : '=';
+LEFT_ANGLE_BRACKET_KEY : '<' ;
+RIGHT_ANGLE_BRACKET_KEY : '>' ;
+Exclamation_KEY : '!';
+EQUAL_KEY : 'eq' ;
+LESSTHAN_KEY : 'lst';
+GREATERTHAN_KEY : 'grt';
+NOTEQUAL_KEY : 'noteq';
+
+
+EXCLUDE_KEY : 'exclude';
+INCLUDE_KEY : 'include';
+WILD_PATTERN_KEY : 'wildpattern';
+MIN_KEY : 'min';
+MAX_KEY : 'max';
+UNIQUE_KEY : 'unique';
+NULLABLE_KEY:'nullable';
+NON_NULLABLE_KEY : 'non-nullable';
+PK_KEY : 'pk' ;
+ENUM_KEY : 'enum' ;
+GET_KEY : 'GET' ;
+POST_KEY : 'POST';
+PUT_KEY : 'PUT' ;
+DELETE_KEY : 'DELETE';
+RESPONSE_KEY : 'response';
+INPUT_KEY : 'input';
+RELATIONAL_KEY :  'relational';
+RETURN_ARROW_KEY : '->' ;
+SELECT_FUNCTION_KEY : 'Select' ;
+PROJECT_FUNCTION_KEY : 'Project' ;
+JOIN_FUNCTION_KEY : 'Join_inner' | 'Join_outter' | 'Join_left' | 'Join_right' ;
+SET_FUNCTION_KEY : 'Union' | 'Intersection' | 'Difference' | 'Cartesian' ;
+LIMIT_FUNCTION_KEY : 'Limit' ;
+ORDERBY_FUNCTION_KEY : 'Orderby' ;
+LEN_FUNCTION_KEY : 'Len';
 
 // LEXERS
 
 DIGIT : [0-9];
-
 STRINGVALUE : '"' ( ~["\\] | '\\' . )* '"' ;
-
+BOOLEANVALUE : 'True' | 'False' ;
 
 VARIABLEID : [a-zA-Z_][_a-zA-Z0-9]*;
-
-INT : 'Int';
-STRING : 'String';
-DATE : 'Date';
-TIME : 'Time' ;
-
 WS : [ \t\r\n]+ -> skip ;
-
+ANY_CHAR : .;
