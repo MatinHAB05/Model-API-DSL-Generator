@@ -1,8 +1,8 @@
-endpoint listUsers : GET /users {
+endpoint listUsers : GET "/users" {
     response : User ;
 }
 
-endpoint first_User : GET /users/{x}/{y} {
+endpoint first_User : GET "/users/{x}/{y}" {
    response : relational {
         r_1 = Select<name eq y,age lst x> (User);
         r_2 = Project<name,lastname>(r_1);

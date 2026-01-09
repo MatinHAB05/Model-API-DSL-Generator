@@ -63,10 +63,12 @@ enumitem : genericvalue ;
 endpointrule : 'endpoint' operationId ':' htttpMethod endpointurl '{' endpoinblock '}';
 operationId : variablename ;
 htttpMethod : GET_KEY | POST_KEY | PUT_KEY | DELETE_KEY ;
-endpointurl : '/' | ('/' endpointurl_term)+ '/'?;
-endpointurl_term : '{' variablename'}' | variablename ('-' variablename)*   ;
+//endpointurl : '/' | ('/' endpointurl_terms)+ '/'?;
+//endpointurl_terms : endpointurl_term | endpointurl_term ('-' endpointurl_term)* ;
+//endpointurl_term : '{' variablename'}' | variablename ;
+endpointurl : stringvalue;
 
-endpoinblock : responseblock ';' inputblock ';' | inputblock ';' | responseblock ';' | inputblock  responseblock ';' ;
+endpoinblock : responseblock ';' inputblock ';' | inputblock ';' | responseblock ';' | inputblock ';' responseblock ';' ;
 responseblock : 'response' ':' responseblock_inner ;
 responseblock_inner : modelname | 'relational' '{' relationalcode '}';
 relationalcode : ( define_variable_relational)* '->' expr_relational ';';
@@ -77,13 +79,13 @@ term_relational : variablename | genericvalue;
 inputblock : 'input' ':' jsonstring ;
 jsonstring : stringvalue;
 
-built_in_functions_relational : SELECT_FUNCTION_KEY '<' ( key_value_pair_select_relational (',' key_value_pair_select_relational)* )? '>' '(' variablename ')'
-                              | PROJECT_FUNCTION_KEY '<' (variablename (',' variablename)*) '>' '(' variablename ')'
-                              | JOIN_FUNCTION_KEY '<' (variablename (',' variablename)*) '>' '(' variablename ',' variablename')'
-                              | LEN_FUNCTION_KEY '(' term_relational ')'
-                              | SET_FUNCTION_KEY '(' variablename ',' variablename ')'
-                              | ORDERBY_FUNCTION_KEY '(' variablename ',' booleanvalue ')'
-                              | LIMIT_FUNCTION_KEY '<'term_relational? ',' term_relational? ',' term_relational? '>' '(' variablename ')'
+built_in_functions_relational : SELECT_FUNCTION_KEY '<' ( key_value_pair_select_relational (',' key_value_pair_select_relational)* )? '>' '(' expr_relational ')'
+                              | PROJECT_FUNCTION_KEY '<' (variablename (',' variablename)*) '>' '(' expr_relational ')'
+                              | JOIN_FUNCTION_KEY '<' (variablename (',' variablename)*) '>' '(' expr_relational ',' expr_relational')'
+                              | LEN_FUNCTION_KEY '(' expr_relational ')'
+                              | SET_FUNCTION_KEY '(' expr_relational ',' expr_relational ')'
+                              | ORDERBY_FUNCTION_KEY '(' expr_relational ',' booleanvalue ')'
+                              | LIMIT_FUNCTION_KEY '<'term_relational? ',' term_relational? ',' term_relational? '>' '(' expr_relational ')'
                               ;
 
 key_value_pair_select_relational : variablename binary_logical_operation term_relational ;
@@ -91,12 +93,10 @@ binary_logical_operation : 'eq' | 'lst' | 'grt' | 'noteq' ;
 
 // SHARED RULES
 
-genericvalue : intvalue | stringvalue | datevalue | timevalue;
+genericvalue : intvalue | stringvalue ;
 
 intvalue : ('+'|'-')? DIGIT+;
 stringvalue : STRINGVALUE;
-datevalue : DIGIT+ '-' DIGIT+ '-' DIGIT+;
-timevalue :  DIGIT+ ':' DIGIT+ ':' DIGIT+;
 booleanvalue : BOOLEANVALUE;
 variablename : VARIABLEID ;
 
@@ -161,4 +161,3 @@ BOOLEANVALUE : 'True' | 'False' ;
 
 VARIABLEID : [a-zA-Z_][_a-zA-Z0-9]*;
 WS : [ \t\r\n]+ -> skip ;
-ANY_CHAR : .;
