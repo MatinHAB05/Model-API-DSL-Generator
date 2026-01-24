@@ -74,7 +74,9 @@ responseblock_inner : modelname | 'relational' '{' relationalcode '}';
 relationalcode : ( define_variable_relational)* '->' expr_relational ';';
 define_variable_relational : variablename '=' expr_relational ';';
 expr_relational : term_relational | built_in_functions_relational ;
-term_relational : variablename | genericvalue;
+term_relational : idom_relational (('+'|'-') idom_relational)*;
+idom_relational :  factor_relational(('*'|'/') factor_relational)*;
+factor_relational : variablename | genericvalue | '(' term_relational ')';
 
 inputblock : 'input' ':' jsonstring ;
 jsonstring : stringvalue;
@@ -89,13 +91,13 @@ built_in_functions_relational : SELECT_FUNCTION_KEY '<' ( key_value_pair_select_
                               ;
 
 key_value_pair_select_relational : variablename binary_logical_operation term_relational ;
-binary_logical_operation : 'eq' | 'lst' | 'grt' | 'noteq' ;
+binary_logical_operation : 'eq' | 'lst' | 'grt' | 'grteq' | 'lsteq' |  'not-eq' | 'not-lst' | 'not-grt' | 'not-grteq' | 'not-lsteq' ;
 
 // SHARED RULES
 
 genericvalue : intvalue | stringvalue ;
 
-intvalue : ('+'|'-')? DIGIT+;
+intvalue : ('+'|'-')? DIGITS;
 stringvalue : STRINGVALUE;
 booleanvalue : BOOLEANVALUE;
 variablename : VARIABLEID ;
@@ -124,7 +126,14 @@ Exclamation_KEY : '!';
 EQUAL_KEY : 'eq' ;
 LESSTHAN_KEY : 'lst';
 GREATERTHAN_KEY : 'grt';
-NOTEQUAL_KEY : 'noteq';
+LESSTHAN_OR_EQUAL_KEY : 'lsteq';
+GREATERTHAN_OR_EQUAL_KEY : 'grteq';
+
+NOT_EQUAL_KEY : 'not-eq' ;
+NOT_LESSTHAN_KEY : 'not-lst';
+NOT_GREATERTHAN_KEY : 'not-grt';
+NOT_LESSTHAN_OR_EQUAL_KEY : 'not-lsteq';
+NOT_GREATERTHAN_OR_EQUAL_KEY : 'not-grteq';
 
 
 EXCLUDE_KEY : 'exclude';
@@ -155,9 +164,16 @@ LEN_FUNCTION_KEY : 'Len';
 
 // LEXERS
 
-DIGIT : [0-9];
-STRINGVALUE : '"' ( ~["\\] | '\\' . )* '"' ;
+DIGITS : DIGIT+;
+STRINGVALUE : '"' ( ESC | . )*? '"' ;
 BOOLEANVALUE : 'True' | 'False' ;
 
+fragment ESC : '\\'[nbtr"\\];
+fragment DIGIT : [0-9];
+
+
 VARIABLEID : [a-zA-Z_][_a-zA-Z0-9]*;
+SINGLELINE_COMMENT : '//' ~[\n]* -> skip;
+MULTILINE_COMMENT : '"""' .*?  '"""' -> skip;
+
 WS : [ \t\r\n]+ -> skip ;

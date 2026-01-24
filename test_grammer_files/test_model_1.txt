@@ -1,10 +1,24 @@
 enum Role{
-    "ADMIN" ,
-    "USER" ,
-    "GUEST" ,
-    "MANAGER"
+    "ADMIN" , // this is for admin
+    "USER" , // this is for user
+    "GUEST" , // this is for Gust
+    "MANAGER" // this is for manager
 }
 
+"""
+This is Multi Line Comment
+"""
+
+""" This is Multi Line Comment
+"""
+
+"""
+This is Multi Line Comment """
+
+""" This is Multi Line Comment """
+
+
+//start Person model
 model Person {
     username : String @pk @non-nullable @unique @valid[wildpattern="..."];
     age : Int @nullable @valid[min=8,max=14];
@@ -12,3 +26,4 @@ model Person {
     second_role : Role @non-nullable @valid[include={"MANAGER","USER"}];
     bth : Date @valid[min="2020-01-01" , max="2024-06-11"];
 }
+//end person model . this is a comment
