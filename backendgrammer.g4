@@ -68,14 +68,14 @@ htttpMethod : GET_KEY | POST_KEY | PUT_KEY | DELETE_KEY ;
 //endpointurl_term : '{' variablename'}' | variablename ;
 endpointurl : stringvalue;
 
-endpoinblock : responseblock ';' inputblock ';' | inputblock ';' | responseblock ';' | inputblock ';' responseblock ';' ;
+endpoinblock : responseblock ';' inputblock ';' | responseblock ';' | inputblock ';' responseblock ';' ;
 responseblock : 'response' ':' responseblock_inner ;
 responseblock_inner : modelname | 'relational' '{' relationalcode '}';
 relationalcode : ( define_variable_relational)* '->' expr_relational ';';
 define_variable_relational : variablename '=' expr_relational ';';
 expr_relational : term_relational | built_in_functions_relational ;
-term_relational : idom_relational (('+'|'-') idom_relational)*;
-idom_relational :  factor_relational(('*'|'/') factor_relational)*;
+term_relational : term_relational ('+'|'-') idom_relational | idom_relational;
+idom_relational :  idom_relational ('*'|'/') factor_relational | factor_relational;
 factor_relational : variablename | genericvalue | '(' term_relational ')';
 
 inputblock : 'input' ':' jsonstring ;
@@ -95,7 +95,7 @@ binary_logical_operation : 'eq' | 'lst' | 'grt' | 'grteq' | 'lsteq' |  'not-eq' 
 
 // SHARED RULES
 
-genericvalue : intvalue | stringvalue ;
+genericvalue : intvalue | stringvalue | booleanvalue;
 
 intvalue : ('+'|'-')? DIGITS;
 stringvalue : STRINGVALUE;

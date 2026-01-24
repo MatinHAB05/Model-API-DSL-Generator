@@ -14,3 +14,16 @@ endpoint first_User : GET "/users/{x}/{y}" {
         -> r_6 ;
    };
 }
+
+
+endpoint sign_in : POST "/users/sign-in" {
+   input : "
+   {
+   name : 'mamad' ,
+   age : 18 ,
+   sex : 'Male'
+
+   }
+   "; // json string witout grammer checking(if it is not in form of json that must error in runtime!)
+   response : User;
+}

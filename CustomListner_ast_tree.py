@@ -1,0 +1,399 @@
+from gen.backendgrammerListener import backendgrammerListener
+from gen.backendgrammerParser import backendgrammerParser
+from ast_tree import AST_Tree
+from same_ast_tree_creation.handling_build_ast_nodes_in_Listner import *
+# This class defines a complete listener for a parse tree produced by backendgrammerListener.
+class AST_Listener(backendgrammerListener):
+    def __init__(self):
+        self.ast = AST_Tree()
+
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#compileinit.
+    def exitCompileinit(self, ctx:backendgrammerParser.CompileinitContext):
+        pass
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#modelrole.
+    def exitModelrole(self, ctx:backendgrammerParser.ModelroleContext):
+        pass
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#modelname.
+    def exitModelname(self, ctx:backendgrammerParser.ModelnameContext):
+        pass
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#modelblock.
+    def exitModelblock(self, ctx:backendgrammerParser.ModelblockContext):
+        pass
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#fieldname.
+    def exitFieldname(self, ctx:backendgrammerParser.FieldnameContext):
+        pass
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#fieldtype.
+    def exitFieldtype(self, ctx:backendgrammerParser.FieldtypeContext):
+        pass
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#fieldannotaions.
+    def exitFieldannotaions(self, ctx:backendgrammerParser.FieldannotaionsContext):
+        pass
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#fieldannotaion.
+    def exitFieldannotaion(self, ctx:backendgrammerParser.FieldannotaionContext):
+        pass
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#fkoption.
+    def exitFkoption(self, ctx:backendgrammerParser.FkoptionContext):
+        pass
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#validoption.
+    def exitValidoption(self, ctx:backendgrammerParser.ValidoptionContext):
+        pass
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#validoptionparameters.
+    def exitValidoptionparameters(self, ctx:backendgrammerParser.ValidoptionparametersContext):
+        pass
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#validoptionparameter.
+    def exitValidoptionparameter(self, ctx:backendgrammerParser.ValidoptionparameterContext):
+        pass
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#exclude_validoptionparameter.
+    def exitExclude_validoptionparameter(self, ctx:backendgrammerParser.Exclude_validoptionparameterContext):
+        pass
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#include_validoptionparameter.
+    def exitInclude_validoptionparameter(self, ctx:backendgrammerParser.Include_validoptionparameterContext):
+        pass
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#wildpattern_validoptionparameter.
+    def exitWildpattern_validoptionparameter(self, ctx:backendgrammerParser.Wildpattern_validoptionparameterContext):
+        pass
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#min_validoptionparameter.
+    def exitMin_validoptionparameter(self, ctx:backendgrammerParser.Min_validoptionparameterContext):
+        pass
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#max_validoptionparameter.
+    def exitMax_validoptionparameter(self, ctx:backendgrammerParser.Max_validoptionparameterContext):
+        pass
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#uniqueoption.
+    def exitUniqueoption(self, ctx:backendgrammerParser.UniqueoptionContext):
+        pass
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#nulloption.
+    def exitNulloption(self, ctx:backendgrammerParser.NulloptionContext):
+        pass
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#pkoption.
+    def exitPkoption(self, ctx:backendgrammerParser.PkoptionContext):
+        pass
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#enumrole.
+    def exitEnumrole(self, ctx:backendgrammerParser.EnumroleContext):
+        pass
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#enumname.
+    def exitEnumname(self, ctx:backendgrammerParser.EnumnameContext):
+        pass
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#enumblock.
+    def exitEnumblock(self, ctx:backendgrammerParser.EnumblockContext):
+        pass
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#enumitem.
+    def exitEnumitem(self, ctx:backendgrammerParser.EnumitemContext):
+        pass
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#endpointrule.
+    def exitEndpointrule(self, ctx:backendgrammerParser.EndpointruleContext):
+        children = [ctx.getChild(x).val for x in [1,3,4,6]]
+        value = self.ast.set_value_obj(content="endpoint", type="endpoint")
+        ctx.val = self.ast.build_new_node(value=value, children=children, parent=None)
+
+    # Exit a parse tree produced by backendgrammerParser#operationId.
+    def exitOperationId(self, ctx:backendgrammerParser.OperationIdContext):
+        directly_child_to_parent(self.ast, ctx.getChild(0), ctx)
+
+    # Exit a parse tree produced by backendgrammerParser#htttpMethod.
+    def exitHtttpMethod(self, ctx:backendgrammerParser.HtttpMethodContext):
+        directly_raw_value(self.ast,ctx.GET_KEY(),ctx)
+
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#endpointurl.
+    def exitEndpointurl(self, ctx:backendgrammerParser.EndpointurlContext):
+        directly_child_to_parent(self.ast, ctx.getChild(0), ctx)
+
+    # Exit a parse tree produced by backendgrammerParser#endpoinblock.
+    def exitEndpoinblock(self, ctx:backendgrammerParser.EndpoinblockContext):
+        if not is_exist_child_in_parent(ctx,"inputblock") :
+            directly_child_to_parent(self.ast, ctx.getChild(0), ctx)
+            return
+
+        children = [ctx.getChild(x).val for x in range(0,-1,2)]
+        value = self.ast.set_value_obj(content="endpoint-block",type="endpoint-block")
+        ctx.val = self.ast.build_new_node(value=value,children=children,parent=None)
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#responseblock.
+    def exitResponseblock(self, ctx:backendgrammerParser.ResponseblockContext):
+        ctx.val = self.ast.build_new_node(value=self.ast.set_value_obj(ctx.getChild(0).getText(), "response-block"),
+                                          children=[ctx.getChild(2).val],
+                                          parent=None
+                                          )
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#responseblock_inner.
+    def exitResponseblock_inner(self, ctx:backendgrammerParser.Responseblock_innerContext):
+        if is_exist_child_in_parent(ctx,"modelname") :
+            directly_child_to_parent(self.ast, ctx.getChild(0), ctx)
+        else :
+            directly_child_to_parent(self.ast, ctx.getChild(2), ctx)
+
+
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#relationalcode.
+    def exitRelationalcode(self, ctx:backendgrammerParser.RelationalcodeContext):
+        if not is_exist_child_in_parent(ctx,"define_variable_relational") :
+            directly_child_to_parent(self.ast, ctx.getChild(1), ctx)
+        else :
+            children = []
+            value = self.ast.set_value_obj(content="relational-codes",type="relational-codes")
+            all_define_variable_relational = ctx.define_variable_relational()
+            for item_ctx in all_define_variable_relational :
+                children.append(item_ctx.val)
+            children.append(ctx.expr_relational().val)
+            ctx.val = self.ast.build_new_node(value=value,children=children,parent=None)
+
+
+    # Exit a parse tree produced by backendgrammerParser#define_variable_relational.
+    def exitDefine_variable_relational(self, ctx:backendgrammerParser.Define_variable_relationalContext):
+        binary_operation(self.ast,ctx,ctx.getChild(1),ctx.getChild(0),ctx.getChild(2))
+
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#expr_relational.
+    def exitExpr_relational(self, ctx:backendgrammerParser.Expr_relationalContext):
+        directly_child_to_parent(self.ast, ctx.getChild(0), ctx)
+
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#term_relational.
+    def exitTerm_relational(self, ctx:backendgrammerParser.Term_relationalContext):
+        if ctx.getChildCount() == 1:
+            directly_child_to_parent(self.ast, ctx.getChild(0), ctx)
+        else:
+            binary_operation(self.ast, ctx, ctx.getChild(1), ctx.getChild(0), ctx.getChild(2))
+
+    # Exit a parse tree produced by backendgrammerParser#idom_relational.
+    def exitIdom_relational(self, ctx:backendgrammerParser.Idom_relationalContext):
+
+        if  ctx.getChildCount()==1 :
+            directly_child_to_parent(self.ast, ctx.getChild(0), ctx)
+        else :
+            binary_operation(self.ast, ctx, ctx.getChild(1), ctx.getChild(0), ctx.getChild(2))
+
+
+    # Exit a parse tree produced by backendgrammerParser#factor_relational.
+    def exitFactor_relational(self, ctx:backendgrammerParser.Factor_relationalContext):
+
+        if is_exist_child_in_parent(ctx,"variablename") or is_exist_child_in_parent(ctx,"genericvalue"):
+            directly_child_to_parent(self.ast, ctx.getChild(0), ctx)
+
+        else :
+            directly_child_to_parent(self.ast, ctx.getChild(1), ctx)
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#inputblock.
+    def exitInputblock(self, ctx:backendgrammerParser.InputblockContext):
+        ctx.val = self.ast.build_new_node(value=self.ast.set_value_obj(ctx.getChild(0).getText(),"input-block"),
+                                          children= [ctx.getChild(2)],
+                                          parent=None
+                                          )
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#jsonstring.
+    def exitJsonstring(self, ctx:backendgrammerParser.JsonstringContext):
+        directly_raw_value(self.ast, ctx, ctx)
+
+    # Exit a parse tree produced by backendgrammerParser#built_in_functions_relational.
+    def exitBuilt_in_functions_relational(self, ctx:backendgrammerParser.Built_in_functions_relationalContext):
+        children = list()
+        name_of_built_in_function = ctx.getChild(0).getText()
+        base_children , main_children = extract_baseInput_and_mainInput(ctx,name_of_built_in_function)
+        children = base_children + main_children
+        value = self.ast.set_value_obj(content=name_of_built_in_function , type="built-in-function")
+        ctx.val = self.ast.build_new_node(value=value,children=children,parent=None)
+
+
+        # Exit a parse tree produced by backendgrammerParser#key_value_pair_select_relational.
+    def exitKey_value_pair_select_relational(self, ctx:backendgrammerParser.Key_value_pair_select_relationalContext):
+        binary_operation(self.ast,ctx,ctx.getChild(1),ctx.getChild(0),ctx.getChild(2))
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#binary_logical_operation.
+    def exitBinary_logical_operation(self, ctx:backendgrammerParser.Binary_logical_operationContext):
+        directly_raw_value(self.ast, ctx, ctx)
+
+    # Exit a parse tree produced by backendgrammerParser#genericvalue.
+    def exitGenericvalue(self, ctx:backendgrammerParser.GenericvalueContext):
+        directly_child_to_parent(self.ast,ctx.getChild(0),ctx)
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#intvalue.
+    def exitIntvalue(self, ctx:backendgrammerParser.IntvalueContext):
+        directly_raw_value(self.ast,ctx,ctx)
+
+
+    
+    
+
+    # Exit a parse tree produced by backendgrammerParser#stringvalue.
+    def exitStringvalue(self, ctx:backendgrammerParser.StringvalueContext):
+        directly_raw_value(self.ast, ctx, ctx)
+
+    # Exit a parse tree produced by backendgrammerParser#booleanvalue.
+    def exitBooleanvalue(self, ctx:backendgrammerParser.BooleanvalueContext):
+        directly_raw_value(self.ast, ctx, ctx)
+
+
+
+    
+
+    # Exit a parse tree produced by backendgrammerParser#variablename.
+    def exitVariablename(self, ctx:backendgrammerParser.VariablenameContext):
+        directly_raw_value(self.ast,ctx,ctx)
+        ctx.val.value['type'] = "variable-name"
+
+
+
