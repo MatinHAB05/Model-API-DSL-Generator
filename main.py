@@ -24,7 +24,7 @@ ast = ast_builder_listener.ast
 print(ast.traverse_ast(ast.root))
 print("BEGIN : visualzation process...")
 file_name = 'matin_test'
-visualzation_ast.draw_ast(ast.root,file_name=file_name)
+visualzation_ast.draw_ast(ast.root,file_name=file_name,node_size=7000,pageframe_size=(128,27))
 print("FINISH : visualzation process ---> " + file_name +".jpg")
 Image.MAX_IMAGE_PIXELS = None  # disable protection
 img = Image.open(f"{file_name}.jpg")
