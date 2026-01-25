@@ -1,5 +1,0 @@
-if False : 
-    import re
-    
-    print(re)
-print(re)
