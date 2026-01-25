@@ -1,12 +1,6 @@
 from ast_tree_node_info import set_types
 
 class AST_Tree :
-    def __init__(self) :
-        self.root = None
-        self.counter = 0
-        self.types = set_types
-
-
     class AST_TreeNode :
         def __init__(self, value , children , parent ,id) :
             self.value = value # {"type" : ... , "content" :...}
@@ -16,6 +10,12 @@ class AST_Tree :
 
         def __str__(self):
             return str((self.id,self.value))
+
+
+    def __init__(self) :
+        self.root = None
+        self.counter = 0
+        self.types = set_types
 
     def set_value_obj(self,content,type):
         if type not in self.types :
@@ -41,7 +41,6 @@ class AST_Tree :
     def traverse_ast(self, root_node):
         traversal = []
         # print(root_node)
-
         if root_node.children is not None and len(root_node.children) > 0:
             for child in root_node.children:
                 traversal.extend(self.traverse_ast(child))

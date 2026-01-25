@@ -6,10 +6,6 @@ from helper_functions.handling_build_ast_nodes_in_Listner import *
 class AST_Listener(backendgrammerListener):
     def __init__(self):
         self.ast = AST_Tree()
-
-
-
-    
     
 
     # Exit a parse tree produced by backendgrammerParser#compileinit.
@@ -28,7 +24,12 @@ class AST_Listener(backendgrammerListener):
             value = self.ast.set_value_obj(content="start-program",type="start-program")
             self.ast.root = ctx.val = self.ast.build_new_node(value=value,children=children,parent=None)
 
+
+############################################################################################################################
+############################################################################################################################
 ################################################## MODEL AREA ##############################################################
+############################################################################################################################
+############################################################################################################################
 
     # Exit a parse tree produced by backendgrammerParser#modelrole.
     def exitModelrole(self, ctx:backendgrammerParser.ModelroleContext):
@@ -150,8 +151,11 @@ class AST_Listener(backendgrammerListener):
         directly_raw_value(self.ast, ctx, ctx)
         ctx.val.value['type'] = "annotation-pk"
 
-
-################################################## ENUM AREA ##############################################################
+############################################################################################################################
+############################################################################################################################
+################################################## ENUM AREA ###############################################################
+############################################################################################################################
+############################################################################################################################
 
     # Exit a parse tree produced by backendgrammerParser#enumrole.
     def exitEnumrole(self, ctx:backendgrammerParser.EnumroleContext):
@@ -162,9 +166,6 @@ class AST_Listener(backendgrammerListener):
     # Exit a parse tree produced by backendgrammerParser#enumname.
     def exitEnumname(self, ctx:backendgrammerParser.EnumnameContext):
         directly_child_to_parent(self.ast, ctx.getChild(0), ctx)
-
-
-    
     
 
     # Exit a parse tree produced by backendgrammerParser#enumblock.
@@ -182,9 +183,11 @@ class AST_Listener(backendgrammerListener):
         directly_child_to_parent(self.ast, ctx.getChild(0), ctx)
 
 
-
-    
-################################################## END POINT AREA ##############################################################
+############################################################################################################################
+############################################################################################################################
+################################################## END POINT AREA ##########################################################
+############################################################################################################################
+############################################################################################################################
 
     # Exit a parse tree produced by backendgrammerParser#endpointrule.
     def exitEndpointrule(self, ctx:backendgrammerParser.EndpointruleContext):
@@ -333,14 +336,17 @@ class AST_Listener(backendgrammerListener):
         # Exit a parse tree produced by backendgrammerParser#key_value_pair_select_relational.
     def exitKey_value_pair_select_relational(self, ctx:backendgrammerParser.Key_value_pair_select_relationalContext):
         binary_operation(self.ast,ctx,ctx.getChild(1),ctx.getChild(0),ctx.getChild(2))
-
-    
-
     # Exit a parse tree produced by backendgrammerParser#binary_logical_operation.
     def exitBinary_logical_operation(self, ctx:backendgrammerParser.Binary_logical_operationContext):
         directly_raw_value(self.ast, ctx, ctx)
 
     # Exit a parse tree produced by backendgrammerParser#genericvalue.
+
+############################################################################################################################
+############################################################################################################################
+################################################## SHARED RULES AREA #######################################################
+############################################################################################################################
+############################################################################################################################
     def exitGenericvalue(self, ctx:backendgrammerParser.GenericvalueContext):
         directly_child_to_parent(self.ast,ctx.getChild(0),ctx)
 

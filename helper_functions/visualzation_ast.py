@@ -1,6 +1,5 @@
 import networkx as nx
 
-
 # Function to add nodes and edges to the NetworkX graph
 def add_to_graph(graph, node, parent=None):
     if node is not None:
@@ -37,3 +36,4 @@ def draw_ast(ast_root_node,file_name="matin_test",pageframe_size=(48,27),margins
     else:
         #BUG !
         plt.show()
+

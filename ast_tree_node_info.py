@@ -10,7 +10,6 @@ set_types = {
     "endpoint" ,# endpoint root rule
     "built-in-function" , # Select , Union , Len , Orderby ,...
     "start-program" , # compileinit rule and start of any program
-    "enum-block" , # enum block that means that enum have more than 1 item
     "enum" , # enum role begin
     "model" , # model role begin
     "model-entry" , # model-entry role
