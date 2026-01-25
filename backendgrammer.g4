@@ -3,7 +3,7 @@ grammar backendgrammer;
 compileinit : (modelrole | enumrole | endpointrule)* ;
 
 
-// MODEL ROLES :
+// MODEL ROLES : **************************************************************************************************************************************
 
 modelrole : 'model' modelname '{' modelblock '}' ;
 
@@ -47,7 +47,7 @@ pkoption: 'pk';
 
 
 
-// ENUM ROLES :
+// ENUM ROLES : **************************************************************************************************************************************
 
 enumrole : 'enum' enumname '{' enumblock '}' ;
 
@@ -58,7 +58,7 @@ enumblock : enumitem | enumitem (',' enumitem)* ;
 enumitem : genericvalue ;
 
 
-// ENDPOINT RULES
+// ENDPOINT RULES : **************************************************************************************************************************************
 
 endpointrule : 'endpoint' operationId ':' htttpMethod endpointurl '{' endpoinblock '}';
 operationId : variablename ;
@@ -93,7 +93,7 @@ built_in_functions_relational : SELECT_FUNCTION_KEY '<' ( key_value_pair_select_
 key_value_pair_select_relational : variablename binary_logical_operation term_relational ;
 binary_logical_operation : 'eq' | 'lst' | 'grt' | 'grteq' | 'lsteq' |  'not-eq' | 'not-lst' | 'not-grt' | 'not-grteq' | 'not-lsteq' ;
 
-// SHARED RULES
+// SHARED RULES : **************************************************************************************************************************************
 
 genericvalue : intvalue | stringvalue | booleanvalue;
 
@@ -103,7 +103,7 @@ booleanvalue : BOOLEANVALUE;
 variablename : VARIABLEID ;
 
 
-// KEYWORDS
+// KEYWORDS : **************************************************************************************************************************************
 
 MODEL_KEY : 'model' ;
 ATSIGN_KEY : '@' ;
@@ -162,7 +162,7 @@ LIMIT_FUNCTION_KEY : 'Limit' ;
 ORDERBY_FUNCTION_KEY : 'Orderby' ;
 LEN_FUNCTION_KEY : 'Len';
 
-// LEXERS
+// LEXERS : **************************************************************************************************************************************
 
 DIGITS : DIGIT+;
 STRINGVALUE : '"' ( ESC | . )*? '"' ;
