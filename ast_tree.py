@@ -14,6 +14,9 @@ class AST_Tree :
             self.parent = parent
             self.id = id
 
+        def __str__(self):
+            return str((self.id,self.value))
+
     def set_value_obj(self,content,type):
         if type not in self.types :
             raise Exception(f"{type}<>{content}")
@@ -35,4 +38,15 @@ class AST_Tree :
 
         return node
 
+    def traverse_ast(self, root_node):
+        traversal = []
+        # print(root_node)
+        if len(root_node.children) > 0:
+            for child in root_node.children:
+                traversal.extend(self.traverse_ast(child))
+        node_dict = dict()
+        node_dict['value'] = root_node.value
+        node_dict['id'] = root_node.id
+        traversal.append((root_node.value['type'],root_node.value['content']))
+        return traversal
 

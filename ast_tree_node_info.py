@@ -9,6 +9,7 @@ set_types = {
     "endpoint-block" , # in endpoints we have both response and input block
     "endpoint" ,# endpoint root rule
     "built-in-function" , # Select , Union , Len , Orderby ,...
+    "start-program" , # compileinit rule and start of any program
 
 
 

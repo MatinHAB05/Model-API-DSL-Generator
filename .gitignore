@@ -2,3 +2,8 @@
 test.g4
 gen
 test_grammer_files/*debugingMode.txt
+.venv/
+req.txt
+*.jpg
+__pycache__/
+helper_functions/__pycache__/

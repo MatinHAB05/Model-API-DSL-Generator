@@ -1,7 +1,7 @@
 from gen.backendgrammerListener import backendgrammerListener
 from gen.backendgrammerParser import backendgrammerParser
 from ast_tree import AST_Tree
-from same_ast_tree_creation.handling_build_ast_nodes_in_Listner import *
+from helper_functions.handling_build_ast_nodes_in_Listner import *
 # This class defines a complete listener for a parse tree produced by backendgrammerListener.
 class AST_Listener(backendgrammerListener):
     def __init__(self):
@@ -14,7 +14,19 @@ class AST_Listener(backendgrammerListener):
 
     # Exit a parse tree produced by backendgrammerParser#compileinit.
     def exitCompileinit(self, ctx:backendgrammerParser.CompileinitContext):
-        pass
+        child_count = ctx.getChildCount()
+        value = None
+        children = [x.val for x in ctx.getChildren()]
+        if child_count==0 :
+            self.ast.root = ctx.val = None
+        elif child_count == 1:
+            self.ast.root = ctx.val = children[0]
+
+        elif child_count>1 :
+            value = self.ast.set_value_obj(content="start-program",type="start-program")
+            self.ast.root = ctx.val = self.ast.build_new_node(value=value,children=children,parent=None)
+
+
 
 
     
@@ -30,7 +42,8 @@ class AST_Listener(backendgrammerListener):
 
     # Exit a parse tree produced by backendgrammerParser#modelname.
     def exitModelname(self, ctx:backendgrammerParser.ModelnameContext):
-        pass
+        directly_child_to_parent(self.ast, ctx.getChild(0), ctx)
+
 
 
     
@@ -231,19 +244,17 @@ class AST_Listener(backendgrammerListener):
     def exitEndpoinblock(self, ctx:backendgrammerParser.EndpoinblockContext):
         if not is_exist_child_in_parent(ctx,"inputblock") :
             directly_child_to_parent(self.ast, ctx.getChild(0), ctx)
-            return
 
-        children = [ctx.getChild(x).val for x in range(0,-1,2)]
-        value = self.ast.set_value_obj(content="endpoint-block",type="endpoint-block")
-        ctx.val = self.ast.build_new_node(value=value,children=children,parent=None)
-
-
+        else:
+            children = [ctx.getChild(x).val for x in range(0,ctx.getChildCount(),2)]
+            value = self.ast.set_value_obj(content="endpoint-block",type="endpoint-block")
+            ctx.val = self.ast.build_new_node(value=value,children=children,parent=None)
     
     
 
     # Exit a parse tree produced by backendgrammerParser#responseblock.
     def exitResponseblock(self, ctx:backendgrammerParser.ResponseblockContext):
-        ctx.val = self.ast.build_new_node(value=self.ast.set_value_obj(ctx.getChild(0).getText(), "response-block"),
+        ctx.val = self.ast.build_new_node(value=self.ast.set_value_obj("response-block", "response-block"),
                                           children=[ctx.getChild(2).val],
                                           parent=None
                                           )
@@ -318,7 +329,6 @@ class AST_Listener(backendgrammerListener):
 
         if is_exist_child_in_parent(ctx,"variablename") or is_exist_child_in_parent(ctx,"genericvalue"):
             directly_child_to_parent(self.ast, ctx.getChild(0), ctx)
-
         else :
             directly_child_to_parent(self.ast, ctx.getChild(1), ctx)
 
@@ -327,8 +337,8 @@ class AST_Listener(backendgrammerListener):
 
     # Exit a parse tree produced by backendgrammerParser#inputblock.
     def exitInputblock(self, ctx:backendgrammerParser.InputblockContext):
-        ctx.val = self.ast.build_new_node(value=self.ast.set_value_obj(ctx.getChild(0).getText(),"input-block"),
-                                          children= [ctx.getChild(2)],
+        ctx.val = self.ast.build_new_node(value=self.ast.set_value_obj("input-block","input-block"),
+                                          children= [ctx.getChild(2).val],
                                           parent=None
                                           )
 
@@ -338,7 +348,7 @@ class AST_Listener(backendgrammerListener):
 
     # Exit a parse tree produced by backendgrammerParser#jsonstring.
     def exitJsonstring(self, ctx:backendgrammerParser.JsonstringContext):
-        directly_raw_value(self.ast, ctx, ctx)
+        directly_child_to_parent(self.ast,ctx.getChild(0),ctx)
 
     # Exit a parse tree produced by backendgrammerParser#built_in_functions_relational.
     def exitBuilt_in_functions_relational(self, ctx:backendgrammerParser.Built_in_functions_relationalContext):

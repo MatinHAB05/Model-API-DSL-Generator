@@ -68,7 +68,7 @@ htttpMethod : GET_KEY | POST_KEY | PUT_KEY | DELETE_KEY ;
 //endpointurl_term : '{' variablename'}' | variablename ;
 endpointurl : stringvalue;
 
-endpoinblock : responseblock ';' inputblock ';' | responseblock ';' | inputblock ';' responseblock ';' ;
+endpoinblock : responseblock ';' inputblock ';' |  inputblock ';' responseblock ';' | responseblock ';' ;
 responseblock : 'response' ':' responseblock_inner ;
 responseblock_inner : modelname | 'relational' '{' relationalcode '}';
 relationalcode : ( define_variable_relational)* '->' expr_relational ';';
