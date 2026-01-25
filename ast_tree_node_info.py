@@ -12,7 +12,6 @@ set_types = {
     "start-program" , # compileinit rule and start of any program
     "enum-block" , # enum block that means that enum have more than 1 item
     "enum" , # enum role begin
-    "model-block" , # model rule block that means that model have more than 1 entry
     "model" , # model role begin
     "model-entry" , # model-entry role
     "annotation-validation-max" , # max = 7 the "max" op
@@ -26,5 +25,7 @@ set_types = {
     "annotation-non-nullable",  # @non-nullable "non-nullable" op
     "annotation-unique",  # @unique "unique" op
     "annotation-foreign-key",  # @foreign-key "foreign-key" op
+    "generic-field-type" , # field types of models like Int , DateTime , String ,
+    "custom-field-type",  # field types of models like enums that we declare
 
 }

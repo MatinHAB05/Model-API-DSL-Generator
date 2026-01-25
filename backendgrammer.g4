@@ -5,17 +5,15 @@ compileinit : (modelrole | enumrole | endpointrule)* ;
 
 // MODEL ROLES : **************************************************************************************************************************************
 
-modelrole : 'model' modelname '{' modelblock '}' ;
+modelrole : 'model' modelname '{' modelenyty+ '}' ;
 
 modelname: variablename;
-
-modelblock : modelenyty+;
 
 modelenyty : fieldname ':' fieldtype ('@' fieldannotaion)* ';';
 
 fieldname : variablename;
 
-fieldtype : variablename;
+fieldtype : 'String' | 'Int' | 'Date' | 'Double' | 'Time' | 'DateTime' | variablename;
 
 fieldannotaion : pkoption | nulloption | uniqueoption | validoption | fkoption ;
 
@@ -106,6 +104,13 @@ variablename : VARIABLEID ;
 // KEYWORDS : **************************************************************************************************************************************
 
 MODEL_KEY : 'model' ;
+STRING_FILED_TYPE  : 'String';
+INT_FILED_TYPE  : 'Int';
+DATE_FILED_TYPE  : 'Date';
+DOUBLE_FILED_TYPE  : 'Double';
+TIME_FILED_TYPE  : 'Time';
+DATETIME_FILED_TYPE  : 'DateTime';
+
 ATSIGN_KEY : '@' ;
 FK_KEY : 'foreign-key';
 LEFT_CURLBR_KEY : '{' ;
