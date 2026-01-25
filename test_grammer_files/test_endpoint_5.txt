@@ -1,0 +1,39 @@
+endpoint sort_user : GET "/users/first/{x}-{y}-{z}" {
+   response : relational {
+       r2 = Len(r1) ;
+       -> r2;
+
+   };
+}
+
+
+
+endpoint sort_user : GET "/users/first/{x}-{y}-{z}" {
+   response : relational {
+        -> Orderby(r_1,True) ;
+   };
+}
+
+
+endpoint sort_user : GET "/users/first/{x}-{y}-{z}" {
+   response : relational {
+        r_1 = Select<name eq "alibaba",age grt 18*x-(y/z)>(User);
+        ->  Select<name eq "alibaba",age grt 18*(x-y)/z>(User) ;
+   };
+}
+
+
+
+endpoint sort_user : GET "/users/first/{x}-{y}-{z}" {
+   response : relational {
+       r1 = User;
+       r2 = Animals;
+       r10 = Union(r1,r2);
+       r20 = Cartesian(r1,r2);
+       r30 = Intersection(r1,r2);
+       r40 = Difference(r1,r2);
+       -> Orderby(Union(Cartesian(r1,r2),Difference(r10,r20)),False);
+
+   };
+}
+

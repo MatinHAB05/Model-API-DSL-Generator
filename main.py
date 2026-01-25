@@ -8,7 +8,7 @@ from helper_functions import visualzation_ast
 from PIL import Image
 # DEBUGING MODE !!!
 
-file_name = f"test_{4}_debugingMode"
+file_name = f"test_{1}_debugingMode"
 stream = FileStream("test_grammer_files\\"+ file_name+ ".txt")
 lexer = backendgrammerLexer(stream)
 token_stream = CommonTokenStream(lexer)

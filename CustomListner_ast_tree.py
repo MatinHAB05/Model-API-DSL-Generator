@@ -182,8 +182,8 @@ class AST_Listener(backendgrammerListener):
         pass
 
 
-    
-    
+
+################################################## ENUM AREA ##############################################################
 
     # Exit a parse tree produced by backendgrammerParser#enumrole.
     def exitEnumrole(self, ctx:backendgrammerParser.EnumroleContext):
@@ -215,7 +215,7 @@ class AST_Listener(backendgrammerListener):
 
 
     
-    
+################################################## END POINT AREA ##############################################################
 
     # Exit a parse tree produced by backendgrammerParser#endpointrule.
     def exitEndpointrule(self, ctx:backendgrammerParser.EndpointruleContext):
@@ -363,8 +363,6 @@ class AST_Listener(backendgrammerListener):
     def exitKey_value_pair_select_relational(self, ctx:backendgrammerParser.Key_value_pair_select_relationalContext):
         binary_operation(self.ast,ctx,ctx.getChild(1),ctx.getChild(0),ctx.getChild(2))
 
-
-    
     
 
     # Exit a parse tree produced by backendgrammerParser#binary_logical_operation.
