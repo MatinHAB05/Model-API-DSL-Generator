@@ -41,7 +41,8 @@ class AST_Tree :
     def traverse_ast(self, root_node):
         traversal = []
         # print(root_node)
-        if len(root_node.children) > 0:
+
+        if root_node.children is not None and len(root_node.children) > 0:
             for child in root_node.children:
                 traversal.extend(self.traverse_ast(child))
         node_dict = dict()

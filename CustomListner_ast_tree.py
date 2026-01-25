@@ -18,7 +18,9 @@ class AST_Listener(backendgrammerListener):
         value = None
         children = [x.val for x in ctx.getChildren()]
         if child_count==0 :
-            self.ast.root = ctx.val = None
+            value = self.ast.set_value_obj(content="start-program",type="start-program")
+            self.ast.root = ctx.val = self.ast.build_new_node(value=value,children=children,parent=None)
+
         elif child_count == 1:
             self.ast.root = ctx.val = children[0]
 
@@ -153,7 +155,7 @@ class AST_Listener(backendgrammerListener):
 
     # Exit a parse tree produced by backendgrammerParser#enumrole.
     def exitEnumrole(self, ctx:backendgrammerParser.EnumroleContext):
-        children = [ctx.getChild(3).val]
+        children = ctx.getChild(3).temp_children
         value = self.ast.set_value_obj(content=ctx.enumname().getText(), type="enum")
         ctx.val = self.ast.build_new_node(value=value, children=children, parent=None)
 
@@ -168,12 +170,10 @@ class AST_Listener(backendgrammerListener):
     # Exit a parse tree produced by backendgrammerParser#enumblock.
     def exitEnumblock(self, ctx:backendgrammerParser.EnumblockContext):
         if ctx.getChildCount()==1 :
-            directly_child_to_parent(self.ast, ctx.getChild(0), ctx)
+            ctx.temp_children = [ctx.getChild(0).val]
         else :
             children = [x.val for x in ctx.enumitem()]
-            value = self.ast.set_value_obj(content="enum-block",type="enum-block")
-            ctx.val = self.ast.build_new_node(value=value,children=children,parent=None)
-
+            ctx.temp_children = children
     
     
 
@@ -199,6 +199,8 @@ class AST_Listener(backendgrammerListener):
     # Exit a parse tree produced by backendgrammerParser#htttpMethod.
     def exitHtttpMethod(self, ctx:backendgrammerParser.HtttpMethodContext):
         directly_raw_value(self.ast,ctx.GET_KEY(),ctx)
+        ctx.val.value['type'] = "http-method"
+
 
 
 

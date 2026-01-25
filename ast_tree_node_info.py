@@ -27,5 +27,5 @@ set_types = {
     "annotation-foreign-key",  # @foreign-key "foreign-key" op
     "generic-field-type" , # field types of models like Int , DateTime , String ,
     "custom-field-type",  # field types of models like enums that we declare
-
+    "http-method" , # GET , POST , PUT , DELETE
 }
