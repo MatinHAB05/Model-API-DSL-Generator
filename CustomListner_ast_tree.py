@@ -187,15 +187,13 @@ class AST_Listener(backendgrammerListener):
 
     # Exit a parse tree produced by backendgrammerParser#enumrole.
     def exitEnumrole(self, ctx:backendgrammerParser.EnumroleContext):
-        pass
-
-
-    
-    
+        children = [ctx.getChild(3).val]
+        value = self.ast.set_value_obj(content=ctx.enumname().getText(), type="enum")
+        ctx.val = self.ast.build_new_node(value=value, children=children, parent=None)
 
     # Exit a parse tree produced by backendgrammerParser#enumname.
     def exitEnumname(self, ctx:backendgrammerParser.EnumnameContext):
-        pass
+        directly_child_to_parent(self.ast, ctx.getChild(0), ctx)
 
 
     
@@ -203,15 +201,20 @@ class AST_Listener(backendgrammerListener):
 
     # Exit a parse tree produced by backendgrammerParser#enumblock.
     def exitEnumblock(self, ctx:backendgrammerParser.EnumblockContext):
-        pass
-
+        if ctx.getChildCount()==1 :
+            directly_child_to_parent(self.ast, ctx.getChild(0), ctx)
+        else :
+            children = [x.val for x in ctx.enumitem()]
+            value = self.ast.set_value_obj(content="enum-block",type="enum-block")
+            ctx.val = self.ast.build_new_node(value=value,children=children,parent=None)
 
     
     
 
     # Exit a parse tree produced by backendgrammerParser#enumitem.
     def exitEnumitem(self, ctx:backendgrammerParser.EnumitemContext):
-        pass
+        directly_child_to_parent(self.ast, ctx.getChild(0), ctx)
+
 
 
     
