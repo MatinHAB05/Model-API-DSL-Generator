@@ -359,7 +359,6 @@ class AST_Listener(backendgrammerListener):
         value = self.ast.set_value_obj(content=name_of_built_in_function , type="built-in-function")
         ctx.val = self.ast.build_new_node(value=value,children=children,parent=None)
 
-
         # Exit a parse tree produced by backendgrammerParser#key_value_pair_select_relational.
     def exitKey_value_pair_select_relational(self, ctx:backendgrammerParser.Key_value_pair_select_relationalContext):
         binary_operation(self.ast,ctx,ctx.getChild(1),ctx.getChild(0),ctx.getChild(2))

@@ -62,7 +62,7 @@ def extract_baseInput_and_mainInput(current_function,name_func) :
 
     elif  name_func=="Orderby" :
         main_inputs.append(current_function.expr_relational(0).val)
-        main_inputs.append(current_function.booleanvalue(0).val)
+        main_inputs.append(current_function.booleanvalue().val)
 
 
     elif name_func == "Limit":
