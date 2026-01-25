@@ -3,25 +3,25 @@ grammar backendgrammer;
 compileinit : (modelrole | enumrole | endpointrule)* ;
 
 
-// MODEL ROLES :
+// MODEL ROLES : **************************************************************************************************************************************
+// MODEL ROLES : **************************************************************************************************************************************
+// MODEL ROLES : **************************************************************************************************************************************
 
-modelrole : 'model' modelname '{' modelblock '}' ;
+modelrole : 'model' modelname '{' modelenyty+ '}' ;
 
 modelname: variablename;
 
-modelblock : (fieldname ':' fieldtype fieldannotaions ';')+;
+modelenyty : fieldname ':' fieldtype ('@' fieldannotaion)* ';';
 
 fieldname : variablename;
 
-fieldtype : variablename;
+fieldtype : 'String' | 'Int' | 'Date' | 'Double' | 'Time' | 'DateTime' | variablename;
 
-fieldannotaions : ('@' fieldannotaion)* ;
 fieldannotaion : pkoption | nulloption | uniqueoption | validoption | fkoption ;
 
 fkoption: 'foreign-key' '(' modelname '.' fieldname ')';
 
-validoption: 'valid' '[' validoptionparameters? ']';
-validoptionparameters : validoptionparameter | validoptionparameter (',' validoptionparameter)+ ;
+validoption: 'valid' '[' (validoptionparameter | validoptionparameter (',' validoptionparameter)+)? ']';
 validoptionparameter : max_validoptionparameter |
                        min_validoptionparameter |
                        wildpattern_validoptionparameter |
@@ -46,8 +46,9 @@ nulloption: 'nullable' | 'non-nullable';
 pkoption: 'pk';
 
 
-
-// ENUM ROLES :
+// ENUM ROLES : **************************************************************************************************************************************
+// ENUM ROLES : **************************************************************************************************************************************
+// ENUM ROLES : **************************************************************************************************************************************
 
 enumrole : 'enum' enumname '{' enumblock '}' ;
 
@@ -57,8 +58,9 @@ enumblock : enumitem | enumitem (',' enumitem)* ;
 
 enumitem : genericvalue ;
 
-
-// ENDPOINT RULES
+// ENDPOINT RULES : **************************************************************************************************************************************
+// ENDPOINT RULES : **************************************************************************************************************************************
+// ENDPOINT RULES : **************************************************************************************************************************************
 
 endpointrule : 'endpoint' operationId ':' htttpMethod endpointurl '{' endpoinblock '}';
 operationId : variablename ;
@@ -68,14 +70,14 @@ htttpMethod : GET_KEY | POST_KEY | PUT_KEY | DELETE_KEY ;
 //endpointurl_term : '{' variablename'}' | variablename ;
 endpointurl : stringvalue;
 
-endpoinblock : responseblock ';' inputblock ';' | inputblock ';' | responseblock ';' | inputblock ';' responseblock ';' ;
+endpoinblock : responseblock ';' inputblock ';' |  inputblock ';' responseblock ';' | responseblock ';' ;
 responseblock : 'response' ':' responseblock_inner ;
 responseblock_inner : modelname | 'relational' '{' relationalcode '}';
 relationalcode : ( define_variable_relational)* '->' expr_relational ';';
 define_variable_relational : variablename '=' expr_relational ';';
 expr_relational : term_relational | built_in_functions_relational ;
-term_relational : idom_relational (('+'|'-') idom_relational)*;
-idom_relational :  factor_relational(('*'|'/') factor_relational)*;
+term_relational : term_relational ('+'|'-') idom_relational | idom_relational;
+idom_relational :  idom_relational ('*'|'/') factor_relational | factor_relational;
 factor_relational : variablename | genericvalue | '(' term_relational ')';
 
 inputblock : 'input' ':' jsonstring ;
@@ -93,19 +95,29 @@ built_in_functions_relational : SELECT_FUNCTION_KEY '<' ( key_value_pair_select_
 key_value_pair_select_relational : variablename binary_logical_operation term_relational ;
 binary_logical_operation : 'eq' | 'lst' | 'grt' | 'grteq' | 'lsteq' |  'not-eq' | 'not-lst' | 'not-grt' | 'not-grteq' | 'not-lsteq' ;
 
-// SHARED RULES
+// SHARED RULES : **************************************************************************************************************************************
+// SHARED RULES : **************************************************************************************************************************************
+// SHARED RULES : **************************************************************************************************************************************
 
-genericvalue : intvalue | stringvalue ;
+genericvalue : intvalue | stringvalue | booleanvalue;
 
 intvalue : ('+'|'-')? DIGITS;
 stringvalue : STRINGVALUE;
 booleanvalue : BOOLEANVALUE;
 variablename : VARIABLEID ;
 
-
-// KEYWORDS
+// KEYWORDS : **************************************************************************************************************************************
+// KEYWORDS : **************************************************************************************************************************************
+// KEYWORDS : **************************************************************************************************************************************
 
 MODEL_KEY : 'model' ;
+STRING_FILED_TYPE  : 'String';
+INT_FILED_TYPE  : 'Int';
+DATE_FILED_TYPE  : 'Date';
+DOUBLE_FILED_TYPE  : 'Double';
+TIME_FILED_TYPE  : 'Time';
+DATETIME_FILED_TYPE  : 'DateTime';
+
 ATSIGN_KEY : '@' ;
 FK_KEY : 'foreign-key';
 LEFT_CURLBR_KEY : '{' ;
@@ -162,7 +174,9 @@ LIMIT_FUNCTION_KEY : 'Limit' ;
 ORDERBY_FUNCTION_KEY : 'Orderby' ;
 LEN_FUNCTION_KEY : 'Len';
 
-// LEXERS
+// LEXERS : **************************************************************************************************************************************
+// LEXERS : **************************************************************************************************************************************
+// LEXERS : **************************************************************************************************************************************
 
 DIGITS : DIGIT+;
 STRINGVALUE : '"' ( ESC | . )*? '"' ;
