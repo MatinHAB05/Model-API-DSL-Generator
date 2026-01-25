@@ -9,19 +9,19 @@ modelrole : 'model' modelname '{' modelblock '}' ;
 
 modelname: variablename;
 
-modelblock : (fieldname ':' fieldtype fieldannotaions ';')+;
+modelblock : modelenyty+;
+
+modelenyty : fieldname ':' fieldtype ('@' fieldannotaion)* ';';
 
 fieldname : variablename;
 
 fieldtype : variablename;
 
-fieldannotaions : ('@' fieldannotaion)* ;
 fieldannotaion : pkoption | nulloption | uniqueoption | validoption | fkoption ;
 
 fkoption: 'foreign-key' '(' modelname '.' fieldname ')';
 
-validoption: 'valid' '[' validoptionparameters? ']';
-validoptionparameters : validoptionparameter | validoptionparameter (',' validoptionparameter)+ ;
+validoption: 'valid' '[' (validoptionparameter | validoptionparameter (',' validoptionparameter)+)? ']';
 validoptionparameter : max_validoptionparameter |
                        min_validoptionparameter |
                        wildpattern_validoptionparameter |

@@ -10,9 +10,21 @@ set_types = {
     "endpoint" ,# endpoint root rule
     "built-in-function" , # Select , Union , Len , Orderby ,...
     "start-program" , # compileinit rule and start of any program
-    "enum-block" , # enum block that means taht enum have more than 1 item
+    "enum-block" , # enum block that means that enum have more than 1 item
     "enum" , # enum role begin
-
-
+    "model-block" , # model rule block that means that model have more than 1 entry
+    "model" , # model role begin
+    "model-entry" , # model-entry role
+    "annotation-validation-max" , # max = 7 the "max" op
+    "annotation-validation-min",  # min = 4 the "min" op
+    "annotation-validation-wildpattern",  # wildpattern = "this is regex pattern so must be RAW" the "wildpattern" op
+    "annotation-validation-include",  # include = {...} "include" op
+    "annotation-validation-exclude",  # exclude = {...} "exclude" op
+    "annotation-validation",  # @valid[...] "valid" op
+    "annotation-pk",  # @pk "pk" op
+    "annotation-nullable",  # @nullable "nullable" op
+    "annotation-non-nullable",  # @non-nullable "non-nullable" op
+    "annotation-unique",  # @unique "unique" op
+    "annotation-foreign-key",  # @foreign-key "foreign-key" op
 
 }

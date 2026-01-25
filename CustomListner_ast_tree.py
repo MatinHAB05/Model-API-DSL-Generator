@@ -26,88 +26,64 @@ class AST_Listener(backendgrammerListener):
             value = self.ast.set_value_obj(content="start-program",type="start-program")
             self.ast.root = ctx.val = self.ast.build_new_node(value=value,children=children,parent=None)
 
-
-
-
-    
-    
+################################################## MODEL AREA ##############################################################
 
     # Exit a parse tree produced by backendgrammerParser#modelrole.
     def exitModelrole(self, ctx:backendgrammerParser.ModelroleContext):
-        pass
-
-
-    
-    
+        children = [ctx.getChild(3).val]
+        value = self.ast.set_value_obj(content=ctx.modelname().getText(), type="model")
+        ctx.val = self.ast.build_new_node(value=value, children=children, parent=None)
 
     # Exit a parse tree produced by backendgrammerParser#modelname.
     def exitModelname(self, ctx:backendgrammerParser.ModelnameContext):
         directly_child_to_parent(self.ast, ctx.getChild(0), ctx)
 
 
-
-    
-    
-
     # Exit a parse tree produced by backendgrammerParser#modelblock.
     def exitModelblock(self, ctx:backendgrammerParser.ModelblockContext):
-        pass
+        if ctx.getChildCount()==1 :
+            directly_child_to_parent(self.ast, ctx.getChild(0), ctx)
+        else :
+            children = [x.val for x in ctx.modelenyty()]
+            value = self.ast.set_value_obj(content="model-block",type="model-block")
+            ctx.val = self.ast.build_new_node(value=value,children=children,parent=None)
 
 
-    
-    
+    # Exit a parse tree produced by backendgrammerParser#modelenyty.
+    def exitModelenyty(self, ctx:backendgrammerParser.ModelenytyContext):
+        children = [ctx.fieldname().val , ctx.fieldtype().val]
+        anno_children = [x.val for x in ctx.fieldannotaion() ]
+        children += anno_children
+        value = self.ast.set_value_obj(content="model-entry", type="model-entry")
+        ctx.val = self.ast.build_new_node(value=value, children=children, parent=None)
+
+
 
     # Exit a parse tree produced by backendgrammerParser#fieldname.
     def exitFieldname(self, ctx:backendgrammerParser.FieldnameContext):
-        pass
-
-
-    
-    
+        directly_child_to_parent(self.ast, ctx.getChild(0), ctx)
 
     # Exit a parse tree produced by backendgrammerParser#fieldtype.
     def exitFieldtype(self, ctx:backendgrammerParser.FieldtypeContext):
-        pass
+        directly_child_to_parent(self.ast, ctx.getChild(0), ctx)
 
-
-    
-    
-
-    # Exit a parse tree produced by backendgrammerParser#fieldannotaions.
-    def exitFieldannotaions(self, ctx:backendgrammerParser.FieldannotaionsContext):
-        pass
-
-
-    
-    
 
     # Exit a parse tree produced by backendgrammerParser#fieldannotaion.
     def exitFieldannotaion(self, ctx:backendgrammerParser.FieldannotaionContext):
-        pass
+        directly_child_to_parent(self.ast, ctx.getChild(0), ctx)
 
-
-    
-    
 
     # Exit a parse tree produced by backendgrammerParser#fkoption.
     def exitFkoption(self, ctx:backendgrammerParser.FkoptionContext):
-        pass
-
-
-    
-    
+        children = [ctx.modelname().val , ctx.fieldname().val]
+        value = self.ast.set_value_obj(content="annotation-foreign-key", type="annotation-foreign-key")
+        ctx.val = self.ast.build_new_node(value=value, children=children, parent=None)
 
     # Exit a parse tree produced by backendgrammerParser#validoption.
     def exitValidoption(self, ctx:backendgrammerParser.ValidoptionContext):
-        pass
-
-
-    
-    
-
-    # Exit a parse tree produced by backendgrammerParser#validoptionparameters.
-    def exitValidoptionparameters(self, ctx:backendgrammerParser.ValidoptionparametersContext):
-        pass
+        children = [x.val for x in ctx.validoptionparameter()]
+        value = self.ast.set_value_obj(content="annotation-validation", type="annotation-validation")
+        ctx.val = self.ast.build_new_node(value=value, children=children, parent=None)
 
 
     
@@ -115,15 +91,13 @@ class AST_Listener(backendgrammerListener):
 
     # Exit a parse tree produced by backendgrammerParser#validoptionparameter.
     def exitValidoptionparameter(self, ctx:backendgrammerParser.ValidoptionparameterContext):
-        pass
-
-
-    
-    
+        directly_child_to_parent(self.ast, ctx.getChild(0), ctx)
 
     # Exit a parse tree produced by backendgrammerParser#exclude_validoptionparameter.
     def exitExclude_validoptionparameter(self, ctx:backendgrammerParser.Exclude_validoptionparameterContext):
-        pass
+        children = [x.val for x in ctx.genericvalue()]
+        value = self.ast.set_value_obj(content="annotation-validation-exclude", type="annotation-validation-exclude")
+        ctx.val = self.ast.build_new_node(value=value, children=children, parent=None)
 
 
     
@@ -131,56 +105,48 @@ class AST_Listener(backendgrammerListener):
 
     # Exit a parse tree produced by backendgrammerParser#include_validoptionparameter.
     def exitInclude_validoptionparameter(self, ctx:backendgrammerParser.Include_validoptionparameterContext):
-        pass
-
-
-    
-    
+        children = [x.val for x in ctx.genericvalue()]
+        value = self.ast.set_value_obj(content="annotation-validation-include", type="annotation-validation-include")
+        ctx.val = self.ast.build_new_node(value=value, children=children, parent=None)
 
     # Exit a parse tree produced by backendgrammerParser#wildpattern_validoptionparameter.
     def exitWildpattern_validoptionparameter(self, ctx:backendgrammerParser.Wildpattern_validoptionparameterContext):
-        pass
-
-
-    
-    
+        children = [ctx.stringvalue().val]
+        value = self.ast.set_value_obj(content="annotation-validation-wildpattern", type="annotation-validation-wildpattern")
+        ctx.val = self.ast.build_new_node(value=value, children=children, parent=None)
 
     # Exit a parse tree produced by backendgrammerParser#min_validoptionparameter.
     def exitMin_validoptionparameter(self, ctx:backendgrammerParser.Min_validoptionparameterContext):
-        pass
-
+        children = [ctx.genericvalue().val]
+        value = self.ast.set_value_obj(content="annotation-validation-min", type="annotation-validation-min")
+        ctx.val = self.ast.build_new_node(value=value, children=children, parent=None)
 
     
     
 
     # Exit a parse tree produced by backendgrammerParser#max_validoptionparameter.
     def exitMax_validoptionparameter(self, ctx:backendgrammerParser.Max_validoptionparameterContext):
-        pass
+        children = [ctx.genericvalue().val]
+        value = self.ast.set_value_obj(content="annotation-validation-max", type="annotation-validation-max")
+        ctx.val = self.ast.build_new_node(value=value, children=children, parent=None)
 
-
-    
-    
 
     # Exit a parse tree produced by backendgrammerParser#uniqueoption.
     def exitUniqueoption(self, ctx:backendgrammerParser.UniqueoptionContext):
-        pass
+        directly_raw_value(self.ast, ctx, ctx)
+        ctx.val['type'] = "annotation-unique"
 
-
-    
-    
 
     # Exit a parse tree produced by backendgrammerParser#nulloption.
     def exitNulloption(self, ctx:backendgrammerParser.NulloptionContext):
-        pass
+        directly_raw_value(self.ast, ctx, ctx)
+        ctx.val['type'] = "annotation-null" if ctx.val['content']=="nullable" else "annotation-non-nullable"
 
-
-    
-    
 
     # Exit a parse tree produced by backendgrammerParser#pkoption.
     def exitPkoption(self, ctx:backendgrammerParser.PkoptionContext):
-        pass
-
+        directly_raw_value(self.ast, ctx, ctx)
+        ctx.val['type'] = "annotation-pk"
 
 
 ################################################## ENUM AREA ##############################################################
