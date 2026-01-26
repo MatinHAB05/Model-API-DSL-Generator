@@ -1,6 +1,6 @@
-.idea/*
+.idea/
 test.g4
-gen
+gen/
 test_grammer_files/*debugingMode.txt
 .venv/
 req.txt
