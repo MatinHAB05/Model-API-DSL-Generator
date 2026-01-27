@@ -1,0 +1,7 @@
+endpoint union_user : GET "/users/first" {
+   response : relational {
+        this_is_test = Select<>(Project<name,lastname>(Select<name eq "alibaba" , age grt 18>(User)));
+        -> this_is_test ;
+   };
+}
+
