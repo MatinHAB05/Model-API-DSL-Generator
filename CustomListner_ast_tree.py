@@ -201,7 +201,7 @@ class AST_Listener(backendgrammerListener):
 
     # Exit a parse tree produced by backendgrammerParser#htttpMethod.
     def exitHtttpMethod(self, ctx:backendgrammerParser.HtttpMethodContext):
-        directly_raw_value(self.ast,ctx.GET_KEY(),ctx)
+        directly_raw_value(self.ast,ctx,ctx)
         ctx.val.value['type'] = "http-method"
 
 
