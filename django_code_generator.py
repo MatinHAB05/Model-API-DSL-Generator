@@ -261,3 +261,60 @@ class DjangoCodeGenerator:
         for child in node.children:
             val = child.value['content'].replace('"', '').replace("'", "")
             self.models_code.append(f"    {val.upper()} = '{val}', '{val}'")
+    
+    # ==========================================
+    #             ENDPOINT GENERATION
+    # ==========================================
+    def _handle_endpoint(self, node):
+        op_id = node.children[0].value['content']
+        method = node.children[1].value['content']
+        url_raw = node.children[2].value['content']
+        url_pattern = url_raw.replace('"', '')
+
+        self.urls_code.append(f"    path('{url_pattern}', views.{op_id}, name='{op_id}'),")
+        
+        self.views_code.append(f"@csrf_exempt\ndef {op_id}(request):")
+        
+        self.views_code.append(f"    if request.method != '{method}':")
+        self.views_code.append(f"        return JsonResponse({{'error': 'Method not allowed'}}, status=405)")
+        
+        block_node = node.children[3] if len(node.children) > 3 else None
+        
+        if block_node:
+            self._process_endpoint_block(block_node)
+        else:
+            self.views_code.append("    return JsonResponse({'status': 'ok'})")
+
+    def _process_endpoint_block(self, block_node):
+        input_node = next((c for c in block_node.children if c.value['type'] == 'input-block'), None)
+        response_node = next((c for c in block_node.children if c.value['type'] == 'response-block'), None)
+        logic_nodes = [c for c in block_node.children if c.value['type'] == 'relational-codes']
+        
+        if input_node:
+            self.views_code.append("    try:")
+            self.views_code.append("        body = json.loads(request.body)")
+            self.views_code.append("    except Exception:") 
+            self.views_code.append("        return HttpResponseBadRequest('Invalid JSON')")
+        
+        for logic in logic_nodes:
+            var_name = logic.children[0].value['content']
+            expr_node = logic.children[2]
+            
+            expr_str = self._transpile_expression(expr_node)
+            self.views_code.append(f"    {var_name} = {expr_str}")
+            
+        if response_node and response_node.children:
+            ret_item = response_node.children[0]
+            
+            if ret_item.value['type'] == 'variable-name':
+                var_name = ret_item.value['content']
+                self.views_code.append(f"    # Serialize Output")
+                self.views_code.append(f"    if hasattr({var_name}, 'values'):")
+                self.views_code.append(f"        data = list({var_name}.values())") 
+                self.views_code.append(f"    else:")
+                self.views_code.append(f"        data = {var_name}")
+                self.views_code.append(f"    return JsonResponse(data, safe=False)")
+            
+            elif ret_item.value['type'] == 'relational-codes':
+                expr_str = self._transpile_expression(ret_item.children[2])
+                self.views_code.append(f"    return JsonResponse(list({expr_str}.values()), safe=False)")
