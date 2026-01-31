@@ -46,7 +46,7 @@ class DjangoCodeGenerator:
         self.models_code.append("from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator")
         self.models_code.append("from django.core.exceptions import ValidationError")
         self.models_code.append("from django.utils.translation import gettext_lazy as _")
-        self.models_code.append("import datetime") 
+        self.models_code.append("import datetime , time") 
         self.models_code.append("\n# Generated Models")
 
         # --- Views Imports ---
@@ -138,6 +138,7 @@ class DjangoCodeGenerator:
         custom_validators = []
         field_kind = None 
 
+        # 1. Mapping Types
         if ft_content == 'String':
             django_type = "models.CharField"
             kwargs['max_length'] = '255'
@@ -166,6 +167,7 @@ class DjangoCodeGenerator:
             kwargs['choices'] = f"{ft_content}.choices"
             field_kind = "enum"
 
+        # 2. Processing Annotations
         validators_list = []
         
         for anno in annotations:
@@ -175,7 +177,9 @@ class DjangoCodeGenerator:
                 kwargs['primary_key'] = 'True'
             elif a_type == "annotation-unique":
                 kwargs['unique'] = 'True'
-            elif a_type == "annotation-nullable":
+            
+            # --- FIX: Check for both 'annotation-nullable' AND 'annotation-null' ---
+            elif a_type in ["annotation-nullable", "annotation-null"]:
                 kwargs['null'] = 'True'
                 kwargs['blank'] = 'True'
             elif a_type == "annotation-non-nullable":
@@ -190,14 +194,19 @@ class DjangoCodeGenerator:
                 
             elif a_type in ("annotation-validation-min", "annotation-validation-max"):
                 raw_val = anno.children[0].value['content']
-                val = raw_val
+                # --- FIX: Remove extra quotes for Date/Numbers ---
+                clean_val = raw_val.replace('"', '').replace("'", "")
+                
+                val = clean_val # Default for numbers
 
                 if field_kind == 'date':
-                    if '-' in raw_val:
-                        from_py = f"datetime.date.fromisoformat('{raw_val}')"
-                        val = from_py 
-                
-            
+                    # Pass string without extra quotes
+                    val = f"datetime.date.fromisoformat('{clean_val}')"
+
+                if field_kind == "time" :
+                    hour, minute = map(int, val.split(":"))
+                    val = f"time({hour},{minute})"
+
                 if a_type.endswith('min'):
                     validators_list.append(f"MinValueValidator({val})")
                 else:
@@ -219,10 +228,8 @@ class DjangoCodeGenerator:
             
         return django_type, kwargs, custom_validators
 
+
     def _generate_clean_method(self, model_validators):
-        """
-        تولید متد clean() استاندارد جنگو برای چک کردن Include و Exclude
-        """
         self.models_code.append(f"\n    def clean(self):")
         self.models_code.append(f"        super().clean()")
         
@@ -233,25 +240,25 @@ class DjangoCodeGenerator:
             for v in validators:
                 vals_clean = []
                 for x in v['values']:
-                    if str(x).isdigit() or str(x).lower() in ['true', 'false']:
-                         vals_clean.append(str(x))
-                    else:
-                        clean_x = str(x).replace("'", "").replace('"', "")
-                        vals_clean.append(f"'{clean_x}'")
+                    # تمیز کردن کوتیشن‌ها برای مقایسه
+                    clean_x = str(x).replace("'", "").replace('"', "")
+                    vals_clean.append(f"'{clean_x}'")
                 
                 vals_str = ", ".join(vals_clean)
                 
+                # --- FIX: Use double quotes for the error message string to avoid conflict ---
                 if v['type'] == 'include':
                     self.models_code.append(f"            if val_{field_name} not in [{vals_str}]:")
-                    self.models_code.append(f"                raise ValidationError({{ '{field_name}': 'Value must be one of: {vals_str}' }})")
+                    self.models_code.append(f"                raise ValidationError({{ '{field_name}': \"Value must be one of: {vals_str}\" }})")
                 
                 elif v['type'] == 'exclude':
                     self.models_code.append(f"            if val_{field_name} in [{vals_str}]:")
-                    self.models_code.append(f"                raise ValidationError({{ '{field_name}': 'Value cannot be: {vals_str}' }})")
+                    self.models_code.append(f"                raise ValidationError({{ '{field_name}': \"Value cannot be: {vals_str}\" }})")
         
         self.models_code.append(f"\n    def save(self, *args, **kwargs):")
         self.models_code.append(f"        self.full_clean()")
         self.models_code.append(f"        super().save(*args, **kwargs)")
+
 
     # ==========================================
     #               ENUM LOGIC
