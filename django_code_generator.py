@@ -1,4 +1,5 @@
 import os
+import re
 
 class DjangoCodeGenerator:
     def __init__(self):
@@ -6,22 +7,20 @@ class DjangoCodeGenerator:
         self.views_code = []
         self.urls_code = []
         self.admin_code = []
-        self.serializers_code = []
         
         self.registered_models = []
 
     def generate(self, root_node):
-        """
-        Start point for creating the code from AST.
-        """
         self._reset_buffers()
+        
+        self._scan_models(root_node)
+
         self._init_imports()
 
         self._traverse(root_node)
 
         self.urls_code.append("]")
 
-        # Register models in admin
         for model in self.registered_models:
             self.admin_code.append(f"admin.site.register({model})")
 
@@ -39,6 +38,14 @@ class DjangoCodeGenerator:
         self.urls_code = []
         self.admin_code = []
         self.registered_models = []
+
+    def _scan_models(self, node):
+        if hasattr(node, 'value') and node.value.get('type') == 'model':
+            self.registered_models.append(node.value['content'])
+        
+        if hasattr(node, 'children'):
+            for child in node.children:
+                self._scan_models(child)
 
     def _init_imports(self):
         # --- Models Imports ---
@@ -88,7 +95,7 @@ class DjangoCodeGenerator:
     # ==========================================
     def _handle_model(self, node):
         model_name = node.value['content']
-        self.registered_models.append(model_name)
+        
         self.models_code.append(f"\nclass {model_name}(models.Model):")
         
         has_fields = False
@@ -116,12 +123,12 @@ class DjangoCodeGenerator:
         annotations = node.children[1:] if len(node.children) > 1 else []
         
         django_type, kwargs, custom_validators = self._map_field_type_and_annotations(type_node, annotations)
+        
         args_str = ""
         if 'to' in kwargs:
             args_str = f"'{kwargs.pop('to')}', "
 
         kwargs_str = ", ".join([f"{k}={v}" for k, v in kwargs.items()])
-        
         full_params = f"{args_str}{kwargs_str}"
         
         field_def = f"    {field_name} = {django_type}({full_params})"
@@ -138,7 +145,6 @@ class DjangoCodeGenerator:
         custom_validators = []
         field_kind = None 
 
-        # 1. Mapping Types
         if ft_content == 'String':
             django_type = "models.CharField"
             kwargs['max_length'] = '255'
@@ -167,7 +173,6 @@ class DjangoCodeGenerator:
             kwargs['choices'] = f"{ft_content}.choices"
             field_kind = "enum"
 
-        # 2. Processing Annotations
         validators_list = []
         
         for anno in annotations:
@@ -177,8 +182,6 @@ class DjangoCodeGenerator:
                 kwargs['primary_key'] = 'True'
             elif a_type == "annotation-unique":
                 kwargs['unique'] = 'True'
-            
-            # --- FIX: Check for both 'annotation-nullable' AND 'annotation-null' ---
             elif a_type in ["annotation-nullable", "annotation-null"]:
                 kwargs['null'] = 'True'
                 kwargs['blank'] = 'True'
@@ -194,18 +197,19 @@ class DjangoCodeGenerator:
                 
             elif a_type in ("annotation-validation-min", "annotation-validation-max"):
                 raw_val = anno.children[0].value['content']
-                # --- FIX: Remove extra quotes for Date/Numbers ---
                 clean_val = raw_val.replace('"', '').replace("'", "")
                 
-                val = clean_val # Default for numbers
+                val = clean_val
 
                 if field_kind == 'date':
-                    # Pass string without extra quotes
                     val = f"datetime.date.fromisoformat('{clean_val}')"
 
                 if field_kind == "time" :
-                    hour, minute = map(int, val.split(":"))
-                    val = f"time({hour},{minute})"
+                    try:
+                        hour, minute = map(int, clean_val.split(":"))
+                        val = f"datetime.time({hour}, {minute})"
+                    except:
+                        val = f"'{clean_val}'"
 
                 if a_type.endswith('min'):
                     validators_list.append(f"MinValueValidator({val})")
@@ -228,7 +232,6 @@ class DjangoCodeGenerator:
             
         return django_type, kwargs, custom_validators
 
-
     def _generate_clean_method(self, model_validators):
         self.models_code.append(f"\n    def clean(self):")
         self.models_code.append(f"        super().clean()")
@@ -240,19 +243,17 @@ class DjangoCodeGenerator:
             for v in validators:
                 vals_clean = []
                 for x in v['values']:
-                    # تمیز کردن کوتیشن‌ها برای مقایسه
                     clean_x = str(x).replace("'", "").replace('"', "")
                     vals_clean.append(f"'{clean_x}'")
                 
                 vals_str = ", ".join(vals_clean)
                 
-                # --- FIX: Use double quotes for the error message string to avoid conflict ---
                 if v['type'] == 'include':
-                    self.models_code.append(f"            if val_{field_name} not in [{vals_str}]:")
+                    self.models_code.append(f"            if str(val_{field_name}) not in [{vals_str}]:")
                     self.models_code.append(f"                raise ValidationError({{ '{field_name}': \"Value must be one of: {vals_str}\" }})")
                 
                 elif v['type'] == 'exclude':
-                    self.models_code.append(f"            if val_{field_name} in [{vals_str}]:")
+                    self.models_code.append(f"            if str(val_{field_name}) in [{vals_str}]:")
                     self.models_code.append(f"                raise ValidationError({{ '{field_name}': \"Value cannot be: {vals_str}\" }})")
         
         self.models_code.append(f"\n    def save(self, *args, **kwargs):")
@@ -270,58 +271,300 @@ class DjangoCodeGenerator:
             self.models_code.append(f"    {val.upper()} = '{val}', '{val}'")
     
     # ==========================================
-    #             ENDPOINT GENERATION
+    #            ENDPOINT & VIEWS
     # ==========================================
-    def _handle_endpoint(self, node):
-        op_id = node.children[0].value['content']
-        method = node.children[1].value['content']
-        url_raw = node.children[2].value['content']
-        url_pattern = url_raw.replace('"', '')
 
-        self.urls_code.append(f"    path('{url_pattern}', views.{op_id}, name='{op_id}'),")
-        
-        self.views_code.append(f"@csrf_exempt\ndef {op_id}(request):")
-        
+    def _handle_endpoint(self, node):
+        op_id = "unnamed_op"
+        method = "GET"
+        raw_url = ""
+        block_node = None
+
+        for child in node.children:
+            t = child.value['type']
+
+            if t == 'variable-name':
+                op_id = child.value['content']
+
+            elif t == 'http-method':
+                method = child.value['content']
+
+            elif t == 'generic-value':
+                raw_url = child.value['content'].replace('"', '')
+
+            elif t in ('endpoint-block', 'response-block'):
+                block_node = child
+
+        # ---------------- URL ----------------
+        django_url = raw_url.lstrip('/')
+        url_params = re.findall(r'\{(.*?)\}', django_url)
+
+        for param in url_params:
+            django_url = django_url.replace(f"{{{param}}}", f"<str:{param}>")
+
+        self.urls_code.append(
+            f"    path('{django_url}', views.{op_id}, name='{op_id}'),"
+        )
+
+        # ---------------- VIEW ----------------
+        view_args = ["request"] + url_params
+        self.views_code.append("@csrf_exempt")
+        self.views_code.append(f"def {op_id}({', '.join(view_args)}):")
         self.views_code.append(f"    if request.method != '{method}':")
-        self.views_code.append(f"        return JsonResponse({{'error': 'Method not allowed'}}, status=405)")
-        
-        block_node = node.children[3] if len(node.children) > 3 else None
-        
-        if block_node:
-            self._process_endpoint_block(block_node)
-        else:
+        self.views_code.append(
+            "        return JsonResponse({'error': 'Method not allowed'}, status=405)"
+        )
+
+        if not block_node:
             self.views_code.append("    return JsonResponse({'status': 'ok'})")
+            return
+
+        if block_node.value['type'] == 'response-block':
+            self._handle_response_content(block_node)
+        else:
+            self._process_endpoint_block(block_node)
+
 
     def _process_endpoint_block(self, block_node):
-        input_node = next((c for c in block_node.children if c.value['type'] == 'input-block'), None)
-        response_node = next((c for c in block_node.children if c.value['type'] == 'response-block'), None)
-        logic_nodes = [c for c in block_node.children if c.value['type'] == 'relational-codes']
+        response_generated = False
+
+        for child in block_node.children:
+            node_type = child.value['type']
+
+            # ---------- INPUT ----------
+            if node_type == 'input-block':
+                self.views_code.append("    try:")
+                self.views_code.append(
+                    "        body = json.loads(request.body) if request.body else {}"
+                )
+                self.views_code.append("    except Exception:")
+                self.views_code.append(
+                    "        return HttpResponseBadRequest('Invalid JSON')"
+                )
+
+            # ---------- RESPONSE ----------
+            elif node_type == 'response-block':
+                self._handle_response_content(child)
+                response_generated = True
+
+        if not response_generated:
+            self.views_code.append("    return JsonResponse({'status': 'ok'})")
+
+
+    def _handle_response_content(self, response_node):
+        for child in response_node.children:
+            c_type = child.value['type']
+
+            # -------- RELATIONAL --------
+            if c_type == 'relational-codes':
+                self._handle_relational_logic(child)
+                return
+
+            # -------- SIMPLE MODEL / VARIABLE --------
+            elif c_type == 'variable-name':
+                name = child.value['content']
+
+                # response : User ;
+                if name in self.registered_models:
+                    self.views_code.append(
+                        f"    return JsonResponse(list({name}.objects.all().values()), safe=False)"
+                    )
+                else:
+                    self.views_code.append(
+                        f"    return JsonResponse({name}, safe=False)"
+                    )
+                return
+
+        self.views_code.append("    return JsonResponse({'status': 'no content'})")
+
+
+    def _handle_relational_logic(self, relational_node):
+        self.views_code.append("    # Relational Logic")
+
+        for stmt in relational_node.children:
+            op = stmt.value['content']
+
+            # -------- ASSIGN --------
+            if op == "=":
+                var_name = stmt.children[0].value['content']
+                expr = stmt.children[1]
+                code = self._transpile_expression(expr)
+                self.views_code.append(f"    {var_name} = {code}")
+
+            # -------- RETURN (->) --------
+            elif op == "->":
+                expr = stmt.children[0]
+                code = self._transpile_expression(expr)
+
+                self.views_code.append(f"    result = {code}")
+                self.views_code.append(
+                    "    if hasattr(result, 'values'):"
+                )
+                self.views_code.append(
+                    "        result = list(result.values())"
+                )
+                self.views_code.append(
+                    "    return JsonResponse(result, safe=False)"
+                )
+
+
+    # ==========================================
+    #            TRANSPILER ENGINE
+    # ==========================================
+    def _transpile_expression(self, node):
+        val = node.value['content']
+        typ = node.value['type']
+
+        if typ == 'variable-name':
+            if val in self.registered_models:
+                return f"{val}.objects.all()"
+            return val 
         
-        if input_node:
-            self.views_code.append("    try:")
-            self.views_code.append("        body = json.loads(request.body)")
-            self.views_code.append("    except Exception:") 
-            self.views_code.append("        return HttpResponseBadRequest('Invalid JSON')")
+        elif typ == 'generic-value':
+            if val.isdigit() or (val.startswith('-') and val[1:].isdigit()):
+                return val
+            if val == 'True' or val == 'False':
+                return val
+            return val
+
+        elif typ == 'built-in-function':
+            return self._transpile_builtin(val, node.children)
+            
+        return val
+
+    def _transpile_builtin(self, func_name, children):
+        # 1. SELECT: Select<age > 10>(User)
+        if func_name == 'Select':
+            source_node = children[-1] 
+            source_code = self._transpile_expression(source_node)
+            
+            filter_parts = []
+            for cond_node in children[:-1]:
+                print(cond_node)
+                f_str = self._transpile_condition(cond_node)
+                if f_str: filter_parts.append(f_str)
+            
+            filter_args = ", ".join(filter_parts)
+            return f"{source_code}.filter({filter_args})"
+
+        # 2. PROJECT: Project<name, email>(User)
+        elif func_name == 'Project':
+            source_node = children[-1]
+            source_code = self._transpile_expression(source_node)
+            
+            fields = []
+            for c in children[:-1]:
+                content = c.value['content']
+                fields.append(f"'{content}'")
+            return f"{source_code}.values({', '.join(fields)})"
+
+        # 3. JOIN: Join_inner<id, uid>(User, Profile)
+        elif 'Join' in func_name:
+            src1_node = children[-2]
+            src2_node = children[-1]
+            
+            keys = [c.value['content'] for c in children[:-2]]
+            key1 = keys[0]
+            key2 = keys[1] if len(keys) > 1 else key1
+            
+            src1_code = self._transpile_expression(src1_node)
+            src2_code = self._transpile_expression(src2_node)
+            
+            code = (
+                f"[{{**item1, **item2}} "
+                f"for item1 in (list({src1_code}) if not hasattr({src1_code}, 'values') else list({src1_code}.values())) "
+                f"for item2 in (list({src2_code}) if not hasattr({src2_code}, 'values') else list({src2_code}.values())) "
+                f"if str(item1.get('{key1}')) == str(item2.get('{key2}'))]"
+            )
+            return code
+
+        # 4. LEN: Len(User)
+        elif func_name == 'Len':
+            src_code = self._transpile_expression(children[0])
+            return f"({src_code}.count() if hasattr({src_code}, 'count') else len({src_code}))"
+
+        # 5. LIMIT: Limit<0, 10>(User)
+        elif func_name == 'Limit':
+            source_node = children[-1]
+            src_code = self._transpile_expression(source_node)
+            
+            params = [self._transpile_expression(c) for c in children[:-1]]
+            
+            start = params[0] if len(params) > 0 and params[0] != 'None' else "0"
+            stop = params[1] if len(params) > 1 and params[1] != 'None' else ""
+            step = params[2] if len(params) > 2 and params[2] != 'None' else ""
+            
+            slice_str = f"[{start}:{stop}"
+            if step: slice_str += f":{step}"
+            slice_str += "]"
+            
+            return f"{src_code}{slice_str}"
         
-        for logic in logic_nodes:
-            var_name = logic.children[0].value['content']
-            expr_node = logic.children[2]
-            
-            expr_str = self._transpile_expression(expr_node)
-            self.views_code.append(f"    {var_name} = {expr_str}")
-            
-        if response_node and response_node.children:
-            ret_item = response_node.children[0]
-            
-            if ret_item.value['type'] == 'variable-name':
-                var_name = ret_item.value['content']
-                self.views_code.append(f"    # Serialize Output")
-                self.views_code.append(f"    if hasattr({var_name}, 'values'):")
-                self.views_code.append(f"        data = list({var_name}.values())") 
-                self.views_code.append(f"    else:")
-                self.views_code.append(f"        data = {var_name}")
-                self.views_code.append(f"    return JsonResponse(data, safe=False)")
-            
-            elif ret_item.value['type'] == 'relational-codes':
-                expr_str = self._transpile_expression(ret_item.children[2])
-                self.views_code.append(f"    return JsonResponse(list({expr_str}.values()), safe=False)")
+        elif func_name == "Orderby" :
+            source_node = children[-1]
+            source_code = self._transpile_expression(source_node)
+            field = children[1].value['content']
+            is_desc = children[2].value['content'] if len(children) > 2 else "False"
+            prefix = "-" if is_desc == "True" else ""
+            return f"{source_code}.order_by('{prefix}{field}')"
+        
+        elif func_name == 'Union':
+            left = self._transpile_expression(children[0])
+            right = self._transpile_expression(children[1])
+            return f"{left}.union({right})"
+        
+        elif func_name == 'Intersection':
+            left = self._transpile_expression(children[0])
+            right = self._transpile_expression(children[1])
+            return f"{left}.intersection({right})"
+        
+        elif func_name == 'Difference':
+            left = self._transpile_expression(children[0])
+            right = self._transpile_expression(children[1])
+            return f"{left}.difference({right})"
+
+        elif func_name == 'Cartesian':
+            left = self._transpile_expression(children[0])
+            right = self._transpile_expression(children[1])
+            return (
+                f"[{{**a, **b}} "
+                f"for a in list({left}.values()) "
+                f"for b in list({right}.values())]"
+            )
+
+
+        return "None"
+    
+    def _transpile_math_expression(self, node):
+        t = node.value['type']
+        val = node.value['content']
+
+        if t in ('generic-value', 'variable-name'):
+            return val
+
+        if t == 'binary-operation':
+            op = val
+            left = self._transpile_math_expression(node.children[0])
+            right = self._transpile_math_expression(node.children[1])
+            return f"({left} {op} {right})"
+
+        return ""
+
+
+    def _transpile_condition(self, node):
+        if node.value['type'] != 'binary-operation':
+            return ""
+
+        op = node.value['content']
+        field = node.children[0].value['content']
+        value_expr = self._transpile_math_expression(node.children[1])
+
+        lookup = "exact"
+        if op == 'lst': lookup = "lt"
+        elif op == 'grt': lookup = "gt"
+        elif op == 'lsteq': lookup = "lte"
+        elif op == 'grteq': lookup = "gte"
+
+        if lookup == "exact":
+            return f"{field}={value_expr}"
+        return f"{field}__{lookup}={value_expr}"
