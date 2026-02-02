@@ -1,0 +1,6 @@
+endpoint sort_user : GET "/users/first/{x}-{y}-{z}" {
+   response : relational {
+        r_1 = Select<name eq "alibaba",age grt 18*x-(y/z)>(User);
+        -> Orderby(r_1,True) ;
+   };
+}

@@ -1,0 +1,3 @@
+endpoint first_User : GET "/users/{x}/{y}" {
+    response : User ;
+}

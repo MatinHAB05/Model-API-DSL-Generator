@@ -1,0 +1,19 @@
+endpoint union_user : GET "/users/first" {
+
+   response : relational {
+        r_1 = Select<name eq "alibaba" , age grt 18>(User);
+        r_2 = Project<name,lastname>(r_1);
+
+        r_3 = Select<name eq "matin",age grt 50>(User);
+        r_4 = Project<name,lastname>(r_1);
+
+        -> Union(r_3,r_4) ;
+   };
+}
+
+endpoint sort_user : GET "/users/first" {
+   response : relational {
+        r_1 = Select<name eq "alibaba",age grt 18>(User);
+        -> Orderby(r_1,True) ;
+   };
+}

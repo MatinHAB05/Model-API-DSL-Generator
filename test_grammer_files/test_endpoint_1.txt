@@ -1,0 +1,35 @@
+model User {
+    username : String @pk @non-nullable @unique @valid[wildpattern="..."];
+    age : Int @nullable @valid[min=8,max=14];
+    bth : Date @valid[min="2020-01-01" , max="2024-06-11"];
+}
+
+endpoint listUsers : GET "/users" {
+    response : User ;
+}
+
+endpoint first_User : GET "/users/{x}/{y}" {
+   response : relational {
+        r_1 = Select<name eq y,age lst x> (User);
+        r_2 = Project<name,lastname>(r_1);
+        r_3 = Select<>(Person);
+        r_4 = Join_inner<name,username>(r_2,r_4);
+        r_5 = Project<name,lastname,bth>(r_4);
+        len_temp = Len(r_5) ;
+        r_6 = Limit<1,len_temp,3>(r_5);
+        -> r_6 ;
+   };
+}
+
+
+endpoint sign_in : POST "/users/sign-in" {
+   input : "
+   {
+   name : 'mamad' ,
+   age : 18 ,
+   sex : 'Male'
+
+   }
+   "; // json string witout grammer checking(if it is not in form of json that must error in runtime!)
+   response : User;
+}
