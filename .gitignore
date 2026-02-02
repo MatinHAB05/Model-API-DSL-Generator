@@ -4,8 +4,10 @@ gen/
 test_grammer_files/*debugingMode.txt
 .venv/
 req.txt
-*.jpg
+ast-output.jpg
 __pycache__/
 helper_functions/__pycache__/
 .antlr/
 ast-outputs/
+generated_django_app/
+generated_app/
