@@ -1,6 +1,5 @@
 .idea/
 test.g4
-gen/
 test_grammer_files/*debugingMode.txt
 .venv/
 req.txt
