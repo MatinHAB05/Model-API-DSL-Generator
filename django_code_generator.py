@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 
 class DjangoCodeGenerator:
     def __init__(self):
@@ -197,14 +198,14 @@ class DjangoCodeGenerator:
                 
             elif a_type in ("annotation-validation-min", "annotation-validation-max"):
                 raw_val = anno.children[0].value['content']
-                clean_val = raw_val.replace('"', '').replace("'", "")
+                clean_val = raw_val.strip('"').strip("'")
                 
                 val = clean_val
 
                 if field_kind == 'date':
                     val = f"datetime.date.fromisoformat('{clean_val}')"
 
-                if field_kind == "time" :
+                elif field_kind == "time" :
                     try:
                         hour, minute = map(int, clean_val.split(":"))
                         val = f"datetime.time({hour}, {minute})"
@@ -217,8 +218,29 @@ class DjangoCodeGenerator:
                     validators_list.append(f"MaxValueValidator({val})")
 
             elif a_type == "annotation-validation-wildpattern":
-                pattern = anno.children[0].value['content'].replace("'", "").replace('"', "")
-                validators_list.append(f"RegexValidator(regex=r'{pattern}', message='Invalid format')")
+                raw_pattern = anno.children[0].value['content']
+                
+                if raw_pattern.startswith('"') and raw_pattern.endswith('"'):
+                    pattern = raw_pattern[1:-1]
+                elif raw_pattern.startswith("'") and raw_pattern.endswith("'"):
+                    pattern = raw_pattern[1:-1]
+                else:
+                    pattern = raw_pattern
+
+                try:
+                    re.compile(pattern)
+                except re.error as e:
+                    print(f"\n[FATAL ERROR] DSL Compilation Failed!")
+                    print(f"Invalid Regex Pattern found in model definition: {raw_pattern}")
+                    print(f"Python Regex Error: {e}")
+                    sys.exit(1) 
+
+                safe_pattern = pattern.replace("'", "\\'")
+                
+                validators_list.append(
+                    f"RegexValidator(regex=r'{safe_pattern}', "
+                    f"message='Value does not match required pattern: {safe_pattern}')"
+                )
             
             elif a_type == "annotation-validation-include":
                 values = [c.value['content'] for c in anno.children]
@@ -227,10 +249,12 @@ class DjangoCodeGenerator:
                 values = [c.value['content'] for c in anno.children]
                 custom_validators.append({'type': 'exclude', 'values': values})
 
+        # اضافه کردن لیست Validatorهای استاندارد به kwargs
         if validators_list:
             kwargs['validators'] = f"[{', '.join(validators_list)}]"
             
         return django_type, kwargs, custom_validators
+
 
     def _generate_clean_method(self, model_validators):
         self.models_code.append(f"\n    def clean(self):")

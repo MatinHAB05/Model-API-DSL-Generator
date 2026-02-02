@@ -20,7 +20,7 @@ except ImportError:
 DEBUG_AST_MODE = False
 SHOW_AST_RES = False  
 GENERATE_CODE = True  
-INPUT_FILE_PATH = r"./test_grammer_files/test_endpoint_3.txt" 
+INPUT_FILE_PATH = r"./test_grammer_files/test_model_1.txt" 
 OUTPUT_DIR = "generated_django_app"
 
 if __name__ == '__main__':

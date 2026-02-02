@@ -20,7 +20,7 @@ This is Multi Line Comment """
 
 //start Person model
 model Person {
-    username : String @pk @non-nullable @unique @valid[wildpattern="..."];
+    username : String @pk @non-nullable @unique @valid[wildpattern="...[a-z]"];
     age : Int @nullable @valid[min=8,max=14];
     role : Role @non-nullable @valid[exclude={"ADMIN"}];
     second_role : Role @non-nullable @valid[include={"MANAGER","USER"}];
