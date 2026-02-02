@@ -380,32 +380,58 @@ class DjangoCodeGenerator:
 
     def _handle_relational_logic(self, relational_node):
         self.views_code.append("    # Relational Logic")
+        
+        statements = relational_node.children
+        last_var_generated = None
+        explicit_return_done = False
 
-        for stmt in relational_node.children:
-            op = stmt.value['content']
+        for i, stmt in enumerate(statements):
+            op = stmt.value['content'].strip()
+            print("here")
 
-            # -------- ASSIGN --------
+            # 1. Assignment: x = ...
             if op == "=":
                 var_name = stmt.children[0].value['content']
                 expr = stmt.children[1]
                 code = self._transpile_expression(expr)
                 self.views_code.append(f"    {var_name} = {code}")
+                last_var_generated = var_name
 
-            # -------- RETURN (->) --------
+            # 2. Explicit Return: -> ...
             elif op == "->":
                 expr = stmt.children[0]
                 code = self._transpile_expression(expr)
+                self._generate_final_return(code)
+                explicit_return_done = True
+                break 
 
-                self.views_code.append(f"    result = {code}")
-                self.views_code.append(
-                    "    if hasattr(result, 'values'):"
-                )
-                self.views_code.append(
-                    "        result = list(result.values())"
-                )
-                self.views_code.append(
-                    "    return JsonResponse(result, safe=False)"
-                )
+            # 3. Implicit Expression (e.g., Union(r1, r2) without assignment)
+            else:
+                code = self._transpile_expression(stmt)
+                temp_var = f"res_{i}"
+                self.views_code.append(f"    {temp_var} = {code}")
+                last_var_generated = temp_var
+
+        
+        if not explicit_return_done:
+            if last_var_generated:
+                self._generate_final_return(last_var_generated)
+            else:
+                self.views_code.append("    return JsonResponse({'status': 'done without return'})")
+
+    def _generate_final_return(self, result_expr):
+        print("i am here")
+        self.views_code.append(f"    final_result = {result_expr}")
+        
+        self.views_code.append("    if hasattr(final_result, 'values'):")
+        self.views_code.append("        final_result = list(final_result.values())")
+        
+        self.views_code.append("    elif hasattr(final_result, '_meta'):")
+        self.views_code.append("        final_result = {k: v for k, v in final_result.__dict__.items() if not k.startswith('_')}")
+        
+        self.views_code.append("    return JsonResponse(final_result, safe=False)")
+        # print(self.views_code)
+
 
 
     # ==========================================

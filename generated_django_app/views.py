@@ -10,7 +10,7 @@ from .models import *
 
 @csrf_exempt
 
-def sort_user(request, x, y, z):
+def union_user(request):
 
     if request.method != 'GET':
 
@@ -18,4 +18,18 @@ def sort_user(request, x, y, z):
 
     # Relational Logic
 
-    r_1 = User.filter(name="alibaba", age__gt=((18 * x) - (y / z)))
+    this_is_test = User.filter(name="alibaba", age__gt=18).values('name', 'lastname').filter()
+
+    res_1 = this_is_test
+
+    final_result = res_1
+
+    if hasattr(final_result, 'values'):
+
+        final_result = list(final_result.values())
+
+    elif hasattr(final_result, '_meta'):
+
+        final_result = {k: v for k, v in final_result.__dict__.items() if not k.startswith('_')}
+
+    return JsonResponse(final_result, safe=False)
