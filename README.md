@@ -1,7 +1,7 @@
 ---
 title: Model API DSL Generator
 author: Matin HAB & Mani Zamani
-tags: [Python,Compiler,Domain-Specific-Language,,Antler,Code Generation]
+tags: [Python,Compiler,Domain-Specific-Language,Antler,Code Generation]
 date: 2026-01-07
 ---
 
