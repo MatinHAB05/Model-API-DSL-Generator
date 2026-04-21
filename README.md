@@ -11,27 +11,27 @@ You can easily generate a backend API by defining your data models, API endpoint
 
 # Table of Contents
 
-- [About The Project](#About-The-Project)
-- [Getting Started](#Getting-Started)
+- [About The Project](#about-the-project)
+- [Getting Started](#getting-started)
 
-  - [Dependencies](#Dependencies)
-  - [Installing](#Installing)
-  - [Execution](#Executing)
-    - [First Program](#First-Program)
-    - [DSL Grammar](#DSL-Grammar)
-    - [Command Line Options](#Command-Line-Options)
+  - [Dependencies](#dependencies)
+  - [Installing](#installing)
+  - [Execution](#execution)
+    - [First Program](#first-program)
+    - [DSL Grammar](#dsl-grammar)
+    - [Command Line Options](#command-line-options)
 
-- [Usage](#Usage)
+- [Usage](#usage)
 
-  - [At a Glance](#At-a-Glance)
-  - [Examples](#Examples)
+  - [At a Glance](#at-a-glance)
+  - [Examples](#examples)
     - [Model and Enum](#Model-and-Enum)
     - [Model Relations](#Model-Relations)
     - [End Point](#End-Point)
 
-- [Contributing](#Contributing)
-- [License](#License)
-- [Acknowledgments](#Acknowledgments)
+- [Contributing](#contributing)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
 
 ## About The Project
 
