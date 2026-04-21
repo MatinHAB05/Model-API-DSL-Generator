@@ -30,6 +30,7 @@ You can easily generate a backend API by defining your data models, API endpoint
     - [End Point](#End-Point)
 
 - [Contributing](#contributing)
+- [Authors](#authors)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
 
