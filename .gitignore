@@ -10,3 +10,4 @@ helper_functions/__pycache__/
 ast-outputs/
 generated_django_app/
 generated_app/
+.DS_Store/*
