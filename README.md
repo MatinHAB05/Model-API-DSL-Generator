@@ -10,16 +10,32 @@ date: 2026-01-07
 Simple overview of use/purpose.
 
 # Table of Contents
-- [Introduction](#introduction)
-- [Todo List](#todo-list)
-- [Goals](#goals)
-- [Features](#features)
-- [How to View](#how-to-view)
-- [Project Demo Images](#project-demo-images)
 
-## Description
+- [About The Project](#About-The-Project)
+- [Getting Started](#Getting-Started)
 
-An in-depth paragraph about your project and overview of use.
+  - [Dependencies](#Dependencies)
+  - [Installing](#Installing)
+  - [Execution](#Executing)
+    - [First Program](#First-Program)
+    - [DSL Grammar](#DSL-Grammar)
+    - [Command Line Options](#Command-Line-Options)
+
+- [Usage](#Usage)
+
+  - [At a Glance](#At-a-Glance)
+  - [Examples](#Examples)
+    - [Model and Enum](#Model-and-Enum)
+    - [Model Relations](#Model-Relations)
+    - [End Point](#End-Point)
+
+- [Contributing](#Contributing)
+- [License](#License)
+- [Acknowledgments](#Acknowledgments)
+
+## About The Project
+
+چه خبرا؟
 
 ## Getting Started
 
@@ -30,48 +46,92 @@ An in-depth paragraph about your project and overview of use.
 
 ### Installing
 
+احتمالا پیپ میپ میزارم!
+
 - How/where to download your program
 - Any modifications needed to be made to files/folders
 
-### Executing program
+### Execution
 
-- How to run the program
-- Step-by-step bullets
+احتمالا کامند لاین خاص یعنی با مین نیاد دیگه همش با اسمش بیاد بره توی کامند ها های سییستم و بشناسششه
 
-```
-code blocks for commands
-```
+#### First Program
 
-## Help
+ی مثال ساده از ی مدل خیلی سادهی ی بدون فارن کی اینا و ی اند پوینت بدون الجبرا
 
-Any advise for common problems or issues.
+#### DSL Grammar
 
-```
-command to run if program contains helper info
-```
+احتمالا ی سری توضحیات کلی و کوچولو
+بعد ی پی دی اف بزارم یا شاید دوباره مارک داون گذاشتم توی پوشه داکز
+[Show More Details](docs/MoreInformations.pdf)
+
+#### Command Line Options
+
+اقا اینطوری اپشن هارو میبنی و اینا هم هست عشق کن
+
+## Usage
+
+### At a Glance
+
+You can easily generate a backend API by defining your data models, API endpoints, and the database operations required by those endpoints. The system will automatically generate a fully functional API in your chosen framework.
+
+All you need to do is write a small specification using our DSL and run a single command—everything else is generated for you.
+
+### Examples
+
+<details id="Model-and-Enum">
+<summary>Model and Enum</summary>
+<ul></ul>
+</details>
+
+<details id="Model-Relations">
+<summary>Model Relations</summary>
+<ul></ul>
+</details>
+
+<details id="End-Point">
+<summary>End Point</summary>
+<ul></ul>
+</details>
+
+## Contributing
+
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated.
+
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement". Don't forget to give the project a star😉
+
+Thanks again!
+
+Fork the Project
+Create your Feature Branch (git checkout -b feature/AmazingFeature)
+Commit your Changes (git commit -m 'Add some AmazingFeature')
+Push to the Branch (git push origin feature/AmazingFeature)
+Open a Pull Request
 
 ## Authors
 
-Contributors names and contact info
+Matin Hasanali Baki
 
-ex. Dominique Pizzie  
-ex. [@DomPizzie](https://twitter.com/dompizzie)
+- ❤️[GitHub](https://github.com/MatinHAB05)
+- ✉️[Email](m9652973@gmail.com)
+- 📞[Telegram](https://t.me/MHB2005)
 
-## Version History
+Mani Zamani
 
-- 0.2
-  - Various bug fixes and optimizations
-  - See [commit change]() or See [release history]()
-- 0.1
-  - Initial Release
+- ❤️[GitHub](https://github.com/Manizmn84)
+- ✉️[Email](mani.84.zmn@gmail.com)
+- 📞[Telegram](https://t.me/Mani_zmn)
 
 ## License
 
-This project is licensed under the [NAME HERE] License - see the LICENSE.md file for details
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
 
 ## Acknowledgments
 
-Inspiration, code snippets, etc.
+نمیدونم فعلا واقعا
+انتلر
+dsl چیه
+ast چیه
 
 - [awesome-readme](https://github.com/matiassingers/awesome-readme)
 - [PurpleBooth](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2)
