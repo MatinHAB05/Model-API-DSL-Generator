@@ -1,13 +1,13 @@
 ---
-title: ....
+title: Model API DSL Generator
 author: Matin HAB & Mani Zamani
 tags: [Python,Compiler,Domain-Specific-Language,,Antler,Code Generation]
 date: 2026-01-07
 ---
 
-# Project Title
+# Model API DSL Generator
 
-Simple overview of use/purpose.
+You can easily generate a backend API by defining your data models, API endpoints, and the database operations required by those endpoints. The system will automatically generate a fully functional API in your chosen framework.
 
 # Table of Contents
 
@@ -72,8 +72,6 @@ Simple overview of use/purpose.
 ## Usage
 
 ### At a Glance
-
-You can easily generate a backend API by defining your data models, API endpoints, and the database operations required by those endpoints. The system will automatically generate a fully functional API in your chosen framework.
 
 All you need to do is write a small specification using our DSL and run a single command—everything else is generated for you.
 
