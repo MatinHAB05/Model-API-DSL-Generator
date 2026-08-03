@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "model-api-dsl-generator"
-version = "0.1.0"
+version = "1.0.0"
 description = "A DSL and compiler that generates backend API code (models, endpoints, and relational-algebra queries) from a single readable spec file."
 readme = "README.md"
 requires-python = ">=3.9"

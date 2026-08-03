@@ -12,3 +12,4 @@ generated_django_app/
 generated_app/
 .DS_Store/*
 model_api_dsl_generator.egg-info
+dist/
