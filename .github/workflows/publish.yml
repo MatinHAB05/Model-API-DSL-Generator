@@ -1,17 +1,16 @@
-name: Publish Python Package to GitHub Packages
+name: Publish to PyPI and GitHub Packages
 
 on:
+  release:
+    types: [published]
   push:
     tags:
       - "v*"
 
 jobs:
-  deploy:
+  build:
+    name: Build source and wheel distributions
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
     steps:
       - uses: actions/checkout@v4
 
@@ -23,16 +22,62 @@ jobs:
       - name: Install build tools
         run: |
           python -m pip install --upgrade pip
-          pip install build twine
+          pip install build
 
       - name: Build package
         run: python -m build
 
-      - name: Publish to GitHub Packages
+      - name: Store distribution artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+  publish-pypi:
+    name: Publish to PyPI.org
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/Model-API-DSL-Generator
+    permissions:
+      id-token: write # Mandatory for PyPI Trusted Publishing (OIDC)
+    steps:
+      - name: Download distributions
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Publish package to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  publish-ghcr:
+    name: Publish to GitHub Packages
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Download distributions
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Twine
+        run: pip install twine
+
+      - name: Upload to GitHub Packages
         env:
           TWINE_USERNAME: ${{ github.actor }}
           TWINE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python -m twine upload --repository-url https://nupkg.props.gpr.github.com/MatinHAB05/Model-API-DSL-Generator dist/* || \
-          python -m twine upload --repository-url https://upload.ghcr.io/legacy/ dist/* || \
-          echo "Uploading using standard GitHub API..."
+          python -m twine upload --repository-url https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json dist/* || \
+          python -m twine upload --repository-url https://upload.ghcr.io/legacy/ dist/* || true
