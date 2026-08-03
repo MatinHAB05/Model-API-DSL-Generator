@@ -140,16 +140,21 @@ Run it:
 modelapi user_api.txt
 ```
 
+---
+
 ### Command Line Options
 
-> ⚠️ **To fill in:** these are placeholders — swap them for the real flags exposed by `main.py`'s argument parser once the CLI wrapper described below is in place.
-
-| Flag | Description |
-|------|-------------|
-| `<spec-file>` | Path to the `.txt` DSL specification file (positional) |
-| `-o`, `--output` | Output directory for the generated code |
-| `-t`, `--target` | Target framework (e.g. `django`) |
-| `-h`, `--help` | Show help and exit |
+| Flag             | Description                                        | Default         |
+| ---------------- | -------------------------------------------------- | --------------- |
+| `-i`, `--input`  | Input DSL specification file path _(Required)_     | _None_          |
+| `-o`, `--output` | Output directory name                              | `generated_app` |
+| `--target`       | Target framework for code generation from AST tree | `Django`        |
+| `--baseinput`    | Base directory for input file                      | `.`             |
+| `--baseoutput`   | Base directory for output file                     | `.`             |
+| `--generate`     | Enable Code Generator                              | `True`          |
+| `--astimg`       | Show AST visualization image after parsing         | `False`         |
+| `--version`      | Show program's version number and exit             | _None_          |
+| `-h`, `--help`   | Show help message and exit                         | _None_          |
 
 ---
 
@@ -198,36 +203,36 @@ Each field is `name : type` followed by zero or more `@annotation`s.
 
 ### Field Types
 
-| Type | Meaning |
-|------|---------|
-| `String` | Text |
-| `Int` | Integer |
-| `Double` | Floating point number |
-| `Date` | Calendar date |
-| `Time` | Time of day |
-| `DateTime` | Date + time |
+| Type         | Meaning                                 |
+| ------------ | --------------------------------------- |
+| `String`     | Text                                    |
+| `Int`        | Integer                                 |
+| `Double`     | Floating point number                   |
+| `Date`       | Calendar date                           |
+| `Time`       | Time of day                             |
+| `DateTime`   | Date + time                             |
 | `<EnumName>` | Any enum declared elsewhere in the spec |
 
 ### Field Annotations
 
-| Annotation | Meaning |
-|------------|---------|
-| `@pk` | Marks the field as (part of) the primary key |
-| `@unique` | Enforces uniqueness |
-| `@nullable` / `@non-nullable` | Whether the field accepts null |
-| `@foreign-key(Model.field)` | References another model's field |
-| `@valid[...]` | Attaches one or more validation rules |
+| Annotation                    | Meaning                                      |
+| ----------------------------- | -------------------------------------------- |
+| `@pk`                         | Marks the field as (part of) the primary key |
+| `@unique`                     | Enforces uniqueness                          |
+| `@nullable` / `@non-nullable` | Whether the field accepts null               |
+| `@foreign-key(Model.field)`   | References another model's field             |
+| `@valid[...]`                 | Attaches one or more validation rules        |
 
 ### Validation Rules
 
 Used inside `@valid[...]`, comma-separated:
 
-| Rule | Applies to | Example |
-|------|------------|---------|
-| `min=`, `max=` | numeric, date, or time bounds | `@valid[min=8,max=14]` |
-| `wildpattern="..."` | string pattern matching | `@valid[wildpattern="...[a-z]"]` |
-| `include={...}` | allow-list of values | `@valid[include={"USER","MANAGER"}]` |
-| `exclude={...}` | deny-list of values | `@valid[exclude={"ADMIN"}]` |
+| Rule                | Applies to                    | Example                              |
+| ------------------- | ----------------------------- | ------------------------------------ |
+| `min=`, `max=`      | numeric, date, or time bounds | `@valid[min=8,max=14]`               |
+| `wildpattern="..."` | string pattern matching       | `@valid[wildpattern="...[a-z]"]`     |
+| `include={...}`     | allow-list of values          | `@valid[include={"USER","MANAGER"}]` |
+| `exclude={...}`     | deny-list of values           | `@valid[exclude={"ADMIN"}]`          |
 
 ### Endpoints
 
@@ -256,15 +261,15 @@ relational {
 
 Built-in functions:
 
-| Function | Signature | Purpose |
-|----------|-----------|---------|
-| `Select` | `Select<field OP value, ...>(expr)` | Filter rows |
-| `Project` | `Project<field, ...>(expr)` | Pick columns |
-| `Join_inner` / `Join_outter` / `Join_left` / `Join_right` | `Join_x<field1,field2>(exprA, exprB)` | Join two relations |
-| `Union` / `Intersection` / `Difference` / `Cartesian` | `Fn(exprA, exprB)` | Set operations |
-| `Orderby` | `Orderby(expr, True\|False)` | Sort ascending/descending |
-| `Limit` | `Limit<start,length,step>(expr)` | Slice/paginate a relation |
-| `Len` | `Len(expr)` | Row count |
+| Function                                                  | Signature                             | Purpose                   |
+| --------------------------------------------------------- | ------------------------------------- | ------------------------- |
+| `Select`                                                  | `Select<field OP value, ...>(expr)`   | Filter rows               |
+| `Project`                                                 | `Project<field, ...>(expr)`           | Pick columns              |
+| `Join_inner` / `Join_outter` / `Join_left` / `Join_right` | `Join_x<field1,field2>(exprA, exprB)` | Join two relations        |
+| `Union` / `Intersection` / `Difference` / `Cartesian`     | `Fn(exprA, exprB)`                    | Set operations            |
+| `Orderby`                                                 | `Orderby(expr, True\|False)`          | Sort ascending/descending |
+| `Limit`                                                   | `Limit<start,length,step>(expr)`      | Slice/paginate a relation |
+| `Len`                                                     | `Len(expr)`                           | Row count                 |
 
 Comparison operators for `Select` conditions: `eq`, `lst` (less than), `grt` (greater than), `lsteq`, `grteq`, and their negations `not-eq`, `not-lst`, `not-grt`, `not-lsteq`, `not-grteq`.
 
@@ -420,9 +425,9 @@ This project is licensed under the MIT License — see [LICENSE](LICENSE) for de
 
 ## 🙏 Acknowledgments
 
-- [ANTLR4](https://www.antlr.org/) — the parser generator this whole project is built on
-- [awesome-readme](https://github.com/matiassingers/awesome-readme)
-- [PurpleBooth's README template](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2)
-- [dbader/readme-template](https://github.com/dbader/readme-template)
-- [zenorocha's README gist](https://gist.github.com/zenorocha/4526327)
-- [fvcproductions' README gist](https://gist.github.com/fvcproductions/1bfc2d4aecb01a834b46)
+- [ANTLR4 Official Documentation](https://www.antlr.org/) — Reference manual and documentation for the ANTLR4 parser generator
+- [ANTLR4 GitHub Repository](https://github.com/antlr/antlr4) — Official source repository and Python3 runtime library powering [`backendgrammer.g4`](https://github.com/MatinHAB05/Model-API-DSL-Generator/blob/master/Model_API_DSL_Generator/backendgrammer.g4)
+- [Domain-Specific Language (DSL) — Wikipedia](https://en.wikipedia.org/wiki/Domain-specific_language) — Conceptual overview of domain-specific languages and declarative design
+- [Compiler — Wikipedia](https://en.wikipedia.org/wiki/Compiler) — Theoretical background on parsing, AST generation, and code emission
+- [Graphviz Graph Visualization Software](https://graphviz.org/) — Rendering engine used in
+- [DSL Specification Examples](https://github.com/MatinHAB05/Model-API-DSL-Generator/tree/master/Model_API_DSL_Generator/test_grammer_files) — Internal suite of test files demonstrating models, enums, relational algebra, and endpoints
