@@ -37,11 +37,6 @@ jobs:
     name: Publish to PyPI.org
     needs: build
     runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/p/Model-API-DSL-Generator
-    permissions:
-      id-token: write # Mandatory for PyPI Trusted Publishing (OIDC)
     steps:
       - name: Download distributions
         uses: actions/download-artifact@v4
@@ -50,7 +45,9 @@ jobs:
           path: dist/
 
       - name: Publish package to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@v1.8.14
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
 
   publish-ghcr:
     name: Publish to GitHub Packages
