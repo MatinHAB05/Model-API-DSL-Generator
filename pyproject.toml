@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "model-api-dsl-generator"
+version = "0.1.0"
+description = "A DSL and compiler that generates backend API code (models, endpoints, and relational-algebra queries) from a single readable spec file."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "Matin Hasanali Baki", email = "m9652973@gmail.com" },
+    { name = "Mani Zamani", email = "mani.84.zmn@gmail.com" },
+]
+keywords = ["dsl", "antlr4", "code-generation", "compiler", "django", "api-generator"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Code Generators",
+    "Topic :: Software Development :: Compilers",
+]
+
+# ⚠️ Pin this to whatever antlr4-python3-runtime version matches the ANTLR
+# tool version used to generate the files in gen/ (check requirements.txt,
+# or the "Generated from ... by ANTLR X.Y.Z" comment at the top of
+# gen/backendgrammerLexer.py).
+dependencies = [
+    "antlr4-python3-runtime==4.13.2",
+    "pillow==11.2.1",
+    "matplotlib==3.10.1",
+    "networkx==3.4.2",
+    "pandas==3.0.0",
+    "graphviz==0.20.3",
+    "pydot==4.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/MatinHAB05/Model-API-DSL-Generator"
+Repository = "https://github.com/MatinHAB05/Model-API-DSL-Generator"
+
+[project.scripts]
+# The left-hand side ("modelapi") is the command you'll type in your
+# terminal — rename it to whatever you like. The right-hand side must
+# point at a real, zero-argument callable that main.py exposes.
+modelapi = "Model_API_DSL_Generator.main:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["Model_API_DSL_Generator*"]
+
+[tool.setuptools.package-data]
+"Model_API_DSL_Generator.gen" = ["*.tokens", "*.interp"]

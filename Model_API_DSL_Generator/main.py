@@ -1,18 +1,18 @@
+import argparse
+from PIL import Image
+from .helper_functions import visualzation_ast
+from .CustomListner_ast_tree import AST_Listener
+from antlr4 import FileStream, CommonTokenStream, ParseTreeWalker
+from .gen.backendgrammerParser import backendgrammerParser
+from .gen.backendgrammerLexer import backendgrammerLexer
 import os
 import sys
 
 sys.path.append(os.getcwd())
 
-from gen.backendgrammerLexer import backendgrammerLexer
-from gen.backendgrammerParser import backendgrammerParser
-from antlr4 import FileStream, CommonTokenStream, ParseTreeWalker
-from CustomListner_ast_tree import AST_Listener
-from helper_functions import visualzation_ast
-from PIL import Image
-import argparse
 
 try:
-    from django_code_generator import DjangoCodeGenerator
+    from .django_code_generator import DjangoCodeGenerator
 except ImportError:
     print("Error: Could not import 'DjangoCodeGenerator'. Make sure 'django_code_generator.py' exists.")
     sys.exit(1)
@@ -57,7 +57,7 @@ def main():
     Target_language = args.target
 
     if DEBUG_AST_MODE:
-        from helper_functions import debug
+        from .helper_functions import debug
         debug.visual_all_debugingTestcases()
         return
 
@@ -95,7 +95,8 @@ def main():
                 img = Image.open(f"{name}.jpg")
                 img.show()
             except Exception as e:
-                print(f"Image created but could not be opened automatically: {e}")
+                print(
+                    f"Image created but could not be opened automatically: {e}")
         except Exception as e:
             print(f"Visualization Warning: {e}")
 
@@ -120,7 +121,8 @@ def main():
                     print(f"✅ Generated: {full_path}")
 
                 print("-" * 40)
-                print(f"🎉 SUCCESS! Django project files are in '{OUTPUT_DIR}' folder.")
+                print(
+                    f"🎉 SUCCESS! Django project files are in '{OUTPUT_DIR}' folder.")
                 print("-" * 40)
 
             except Exception as e:

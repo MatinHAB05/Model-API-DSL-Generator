@@ -1,4 +1,4 @@
-from ast_tree_node_info import set_types
+from .ast_tree_node_info import set_types
 
 class AST_Tree :
     class AST_TreeNode :

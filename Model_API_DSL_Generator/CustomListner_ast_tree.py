@@ -1,7 +1,7 @@
-from gen.backendgrammerListener import backendgrammerListener
-from gen.backendgrammerParser import backendgrammerParser
-from ast_tree import AST_Tree
-from helper_functions.handling_build_ast_nodes_in_Listner import *
+from .gen.backendgrammerListener import backendgrammerListener
+from .gen.backendgrammerParser import backendgrammerParser
+from .ast_tree import AST_Tree
+from .helper_functions.handling_build_ast_nodes_in_Listner import *
 # This class defines a complete listener for a parse tree produced by backendgrammerListener.
 class AST_Listener(backendgrammerListener):
     def __init__(self):

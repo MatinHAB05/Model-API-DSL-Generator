@@ -1,19 +1,21 @@
-from gen.backendgrammerLexer import backendgrammerLexer
-from gen.backendgrammerParser import backendgrammerParser
+from ..gen.backendgrammerLexer import backendgrammerLexer
+from ..gen.backendgrammerParser import backendgrammerParser
 import os
 import random
-from antlr4 import  FileStream , CommonTokenStream , ParseTreeWalker
-from CustomListner_ast_tree import AST_Listener
-from helper_functions import visualzation_ast
+from antlr4 import FileStream, CommonTokenStream, ParseTreeWalker
+from ..CustomListner_ast_tree import AST_Listener
+from ..helper_functions import visualzation_ast
 
-def all_debug_testCases(path="test_grammer_files") :
+
+def all_debug_testCases(path="test_grammer_files"):
     file_name = [x for x in os.listdir(path) if x.endswith("debugingMode.txt")]
     random.shuffle(file_name)
     random.shuffle(file_name)
     random.shuffle(file_name)  # for reads logs in better style
     return file_name
 
-def visual_all_debugingTestcases(path="test_grammer_files") :
+
+def visual_all_debugingTestcases(path="test_grammer_files"):
 
     file_name = all_debug_testCases()
 
@@ -46,15 +48,16 @@ def visual_all_debugingTestcases(path="test_grammer_files") :
         # img = Image.open(f"{file_name}.jpg")
         # img.show()
 
-def visual_debugingTestcase(input_name,path="test_grammer_files")  :
+
+def visual_debugingTestcase(input_name, path="test_grammer_files"):
     file_name = all_debug_testCases()
     name = None
-    for f in file_name :
-        if input_name in f :
+    for f in file_name:
+        if input_name in f:
             name = f
             break
 
-    if name is None :
+    if name is None:
         raise Exception(f"NOT FOUND <---> {input_name}")
 
     print("*" * 200 + "\n")
